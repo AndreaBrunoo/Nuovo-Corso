@@ -1,0 +1,20 @@
+<Solution>
+  <Project Path="Array1/Array1.csproj" />
+  <Project Path="Calcolatrice1/Calcolatrice1.csproj" />
+  <Project Path="Calcolatrice2/Calcolatrice2.csproj" />
+  <Project Path="Ciclo/Ciclo.csproj" />
+  <Project Path="Date/Date.csproj" />
+  <Project Path="Dizionari/Dizionari.csproj" />
+  <Project Path="FizzBuzz1/FizzBuzz1.csproj" />
+  <Project Path="Funzioni/Funzioni.csproj" />
+  <Project Path="GestioneProdotti/GestioneProdotti.csproj" />
+  <Project Path="GestioneProdottiFunzioni/GestioneProdottiFunzioni.csproj" />
+  <Project Path="JSON/JSON.csproj" />
+  <Project Path="Liste/Liste.csproj" />
+  <Project Path="MetodiConsole/MetodiConsole.csproj" />
+  <Project Path="OperazioniSuFile/OperazioniSuFile.csproj" />
+  <Project Path="Password/Password.csproj" />
+  <Project Path="RubricaAvanzata/RubricaAvanzata.csproj" />
+  <Project Path="RubricaConFunzioni/RubricaConFunzioni.csproj" />
+  <Project Path="RubricaSemplice/RubricaSemplice.csproj" />
+</Solution>
