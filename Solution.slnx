@@ -5,6 +5,7 @@
   <Project Path="Ciclo/Ciclo.csproj" />
   <Project Path="Date/Date.csproj" />
   <Project Path="Dizionari/Dizionari.csproj" />
+  <Project Path="EserciziJson/EserciziJson.csproj" />
   <Project Path="FizzBuzz1/FizzBuzz1.csproj" />
   <Project Path="Funzioni/Funzioni.csproj" />
   <Project Path="GestioneProdotti/GestioneProdotti.csproj" />
