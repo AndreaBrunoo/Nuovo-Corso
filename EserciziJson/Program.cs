@@ -1,10 +1,9 @@
 ﻿
-using System.Net;
 using Newtonsoft.Json;
 
 //esercizio 1
 
-string contenutoJson = File.ReadAllText(@"lastId.json");
+/*string contenutoJson = File.ReadAllText(@"lastId.json");
 
 var id = JsonConvert.DeserializeObject<dynamic>(contenutoJson);
 
@@ -23,36 +22,46 @@ File.WriteAllText(@"partecipante.json", nuovoPartecipanteJson);
 id.lastId = ultimoId + 1;
 
 string idAggiornato = JsonConvert.SerializeObject(id, Formatting.Indented);
-File.WriteAllText(@"lastId.json", idAggiornato);
+File.WriteAllText(@"lastId.json", idAggiornato);*/
 
 //esercizio 2
-while (true)
-{
-    Console.Write("Nome: ");
-    string nome = Console.ReadLine().Trim();
-    Console.Write("Età: ");
-    if (int.TryParse(Console.ReadLine(), out int età))
-    {
-        Console.Write("Presente (true/false)");
-        if (bool.TryParse(Console.ReadLine().ToLower(), out bool presenza))
-        {
-            var partecipante = new
-            {
-                nome = 
-            }
 
-        }
-        else
-        {
-            Console.WriteLine("Non è stato possibile aggiungere la presenza.");
-            Console.WriteLine("Assicurati che sia composta da true o false.");
-            continue;
-        }
-    }
-    else
-    {
-        Console.WriteLine("Non è stato possibile aggiungere l'eta.");
-        Console.WriteLine("Assicurati che sia composta da soli numeri.");
-        continue;
-    }
-}
+// leggo il file lastId.json
+string lastIdJson = File.ReadAllText(@"lastId.json");
+
+// chiedo all'utente di inserire i dati del partecipante
+Console.Write("Nome: ");
+string nome = Console.ReadLine();
+Console.Write("Età: ");
+int eta = int.Parse(Console.ReadLine());
+Console.Write("Presente (true/false): ");
+bool presente = bool.Parse(Console.ReadLine());
+
+// costruisco l'oggetto partecipante con i dati inseriti dall'utente
+var nuovoPartecipante2 = new
+{
+    id = JsonConvert.DeserializeObject<dynamic>(lastIdJson).lastId + 1,
+    nome = nome,
+    eta = eta,
+    presente = presente
+};
+
+// serializzo l'oggetto partecipante in una stringa json
+string nuovoPartecipanteJson2 = JsonConvert.SerializeObject(nuovoPartecipante2, Formatting.Indented);
+// scrivo la stringa json su un file
+File.WriteAllText(@"partecipante.json", nuovoPartecipanteJson2);
+
+// aggiorno il valore di lastId
+var lastIdObj = JsonConvert.DeserializeObject<dynamic>(lastIdJson);
+lastIdObj.lastId = (int)lastIdObj.lastId + 1;
+// serializzo l'oggetto aggiornato in una stringa json
+string updatedLastIdJson = JsonConvert.SerializeObject(lastIdObj, Formatting.Indented);
+// scrivo la stringa json aggiornata su file
+File.WriteAllText(@"lastId.json", updatedLastIdJson);
+
+// stampo i dati del nuovo partecipante
+Console.WriteLine($"Nuovo partecipante creato:");
+Console.WriteLine($"ID: {nuovoPartecipante2.id}");
+Console.WriteLine($"Nome: {nuovoPartecipante2.nome}");
+Console.WriteLine($"Età: {nuovoPartecipante2.eta}");
+Console.WriteLine($"Presente: {nuovoPartecipante2.presente}"); 

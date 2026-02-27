@@ -3,6 +3,7 @@
   <Project Path="Calcolatrice1/Calcolatrice1.csproj" />
   <Project Path="Calcolatrice2/Calcolatrice2.csproj" />
   <Project Path="Ciclo/Ciclo.csproj" />
+  <Project Path="Classi/Classi.csproj" />
   <Project Path="Date/Date.csproj" />
   <Project Path="Dizionari/Dizionari.csproj" />
   <Project Path="EserciziJson/EserciziJson.csproj" />

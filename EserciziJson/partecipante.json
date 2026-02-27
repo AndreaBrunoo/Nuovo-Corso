@@ -1,4 +1,6 @@
 {
-  "id": 2,
-  "nome": "Partecipante 2"
+  "id": 5,
+  "nome": "andrea",
+  "eta": 44,
+  "presente": true
 }

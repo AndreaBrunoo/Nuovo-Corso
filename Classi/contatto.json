@@ -1,0 +1,27 @@
+[
+    {
+        "Id": 1,
+        "Nome": "Nome Contatto",
+        "Cognome": "Cognome Contatto",
+        "Telefono": "0987654321",
+        "Presente": false,
+        "interesssi": [
+            "Interesse 1",
+            "Interesse 2",
+            "Interesse 3"
+        ]
+    },
+    
+    {
+        "Id": 2,
+        "Nome": "Nome Contatto 2",
+        "Cognome": "Cognome Contatto 2",
+        "Telefono": "0987654321",
+        "Presente": false,
+        "interesssi": [
+            "Interesse 1",
+            "Interesse 2",
+            "Interesse 3"
+        ]
+    }
+]
