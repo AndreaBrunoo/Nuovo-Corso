@@ -1,19 +1,7 @@
-﻿
 using Newtonsoft.Json;
-
-// devo creare un'istanza della classe LastIdController per poter utilizzare il metodo GetNextId, che è un metodo di istanza
-var lastIdController = new LastIdController();
-int nextId = lastIdController.GetNextId();
-Console.WriteLine($"Il prossimo ID è: {nextId}");
-
-public class LastId
-{
-    public int Id { get; set; }
-}
-
-// indico public per rendere la classe accessibile da altre parti del programma
 public class LastIdController
 {
+    
     // private per il percorso in modo che non sia accessibile da altre parti del programma
     // readonly per indicare che il valore non può essere modificato dopo l'inizializzazione
     private readonly string path = "lastId.json";
@@ -37,29 +25,6 @@ public class LastIdController
             lastIdObj = JsonConvert.DeserializeObject<LastId>(json) ?? new LastId { Id = 0 };
         }
     }
-
-    public int GetNextId()
-    {
-        lastIdObj.Id++;
-        Salva();
-        return lastIdObj.Id;
-    }
-
-    private void Salva()
-    {
-        string json = JsonConvert.SerializeObject(lastIdObj, Formatting.Indented);
-        File.WriteAllText(path, json);
-    }
-}
-
-public class Contatto
-{
-    public int Id { get; set; }
-    public string Nome { get; set; } = "";
-    public string Cognome { get; set; } = "";
-    public string Telefono { get; set; } = "";
-    public bool Presente { get; set; }
-    public List<string> Interessi { get; set; } = new();
 }
 
 public class ContattiController
