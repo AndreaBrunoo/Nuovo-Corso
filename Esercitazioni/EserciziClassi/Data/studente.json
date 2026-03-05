@@ -16,5 +16,11 @@
     "Nome": "bobby",
     "Cognome": "fisher",
     "Eta": 105
+  },
+  {
+    "Id": 7,
+    "Nome": "gianni",
+    "Cognome": "gianni",
+    "Eta": 23
   }
 ]

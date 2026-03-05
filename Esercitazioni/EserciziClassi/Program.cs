@@ -1,4 +1,5 @@
-﻿// guarda la lista e ricordati il pull
+﻿// guarda la lista 
+using System.ComponentModel.DataAnnotations;
 class Program
 {
     static void Main(string[] args)
@@ -15,178 +16,205 @@ class Program
             {
                 case '1':
                     Console.Clear();
-
                     while (true)
                     {
-                        TitoloAggiunta();
-                        Console.WriteLine("1. Aggiungi Studente");
-                        Console.WriteLine("2. Esci");
-                        char scelta1 = Console.ReadKey().KeyChar;
-
-                        if (scelta1 == '1')
+                        try
                         {
-                            Console.Clear();
+
                             TitoloAggiunta();
-                            Studente nuovoStudente = new Studente();
-                            Console.Write("Inserisci il tuo nome: ");
-                            string? aggiuntaNome = Console.ReadLine();
+                            Console.WriteLine("1. Aggiungi Studente");
+                            Console.WriteLine("2. Esci");
+                            char scelta1 = Console.ReadKey().KeyChar;
 
-                            if (string.IsNullOrWhiteSpace(aggiuntaNome))
+                            if (scelta1 == '1')
                             {
-                                ErroreAggiunta("La stringa è nulla o vuota.");
-                                continue;
-                            }
-                            nuovoStudente.Nome = aggiuntaNome;
-
-                            Console.Clear();
-                            TitoloAggiunta();
-                            Console.Write("Inserisci il tuo cognome: ");
-                            string? aggiuntaCognome = Console.ReadLine();
-
-                            if (string.IsNullOrWhiteSpace(aggiuntaCognome))
-                            {
-                                ErroreAggiunta("La stringa è nulla o vuota.");
-                                continue;
-                            }
-                            nuovoStudente.Cognome = aggiuntaCognome;
-
-                            Console.Clear();
-                            TitoloAggiunta();
-                            Console.Write("Inserisci la tua età: ");
-                            string? aggiuntaEta = Console.ReadLine();
-                            Console.Clear();
-
-                            if (int.TryParse(aggiuntaEta, out int aggiuntaEtaParse))
-                            {
+                                Console.Clear();
                                 TitoloAggiunta();
-                                nuovoStudente.Eta = aggiuntaEtaParse;
-                                Console.WriteLine("Studente aggiunto con successo alla lista.");
-                                Console.WriteLine(" ");
-                                TabellaSenzaId();
-                                Console.WriteLine($"{nuovoStudente.Nome,-16} {nuovoStudente.Cognome,-16} {nuovoStudente.Eta,-5}");
-                                Console.WriteLine(" ");
-                                Console.WriteLine(new string('-', 47));
-                                Console.WriteLine(" ");
-                                studentiController.AggiungiStudente(nuovoStudente);
-                                PremiTasto();
+                                Studente nuovoStudente = new Studente();
+                                Console.Write("Inserisci il tuo nome: ");
+                                string? aggiuntaNome = Console.ReadLine().Trim();
+
+                                if (string.IsNullOrWhiteSpace(aggiuntaNome))
+                                {
+                                    ErroreAggiunta("La stringa è nulla o vuota.");
+                                    continue;
+                                }
+                                nuovoStudente.Nome = aggiuntaNome;
+
+                                Console.Clear();
+                                TitoloAggiunta();
+                                Console.Write("Inserisci il tuo cognome: ");
+                                string? aggiuntaCognome = Console.ReadLine().Trim();
+
+                                if (string.IsNullOrWhiteSpace(aggiuntaCognome))
+                                {
+                                    ErroreAggiunta("La stringa è nulla o vuota.");
+                                    continue;
+                                }
+                                nuovoStudente.Cognome = aggiuntaCognome;
+
+                                Console.Clear();
+                                TitoloAggiunta();
+                                Console.Write("Inserisci la tua età: ");
+                                string? aggiuntaEta = Console.ReadLine();
+                                Console.Clear();
+
+                                if (int.TryParse(aggiuntaEta, out int aggiuntaEtaParse))
+                                {
+                                    var context = new ValidationContext(nuovoStudente);
+
+                                    Validator.ValidateObject(nuovoStudente, context, validateAllProperties: true);
+
+                                    TitoloAggiunta();
+                                    nuovoStudente.Eta = aggiuntaEtaParse;
+                                    Console.WriteLine("Studente aggiunto con successo alla lista.");
+                                    Console.WriteLine(" ");
+                                    TabellaSenzaId();
+                                    Console.WriteLine($"{nuovoStudente.Nome,-16} {nuovoStudente.Cognome,-16} {nuovoStudente.Eta,-5}");
+                                    Console.WriteLine(" ");
+                                    Console.WriteLine(new string('-', 47));
+                                    Console.WriteLine(" ");
+                                    studentiController.AggiungiStudente(nuovoStudente);
+                                    PremiTasto();
+                                }
+                                else
+                                    ErroreAggiunta("Età non valida. Riprova.");
+                                continue;
+                            }
+                            else if (scelta1 == '2')
+                            {
+                                Console.Clear();
+                                break;
                             }
                             else
-                                ErroreAggiunta("Età non valida. Riprova.");
+                                ErroreAggiunta("Carattere non valido. Riprova.");
                             continue;
-                        }
-                        else if (scelta1 == '2')
-                        {
-                            Console.Clear();
-                            break;
-                        }
-                        else
-                            ErroreAggiunta("Carattere non valido. Riprova.");
-                        continue;
-                    }
 
+                        }
+
+                        catch (Exception ex)
+                        {
+                            ErroreErrore("Errore di validazione:");
+                            Console.WriteLine(" ");
+                            Console.WriteLine($"- {ex.Message}");
+                        }
+                    }
                     break;
 
                 case '2':
                     Console.Clear();
-
-                    while (true)
+                    try
                     {
-                        TitoloModifica();
-                        Console.WriteLine("1. Modifica Studente");
-                        Console.WriteLine("2. Esci");
-                        char scelta2 = Console.ReadKey().KeyChar;
-
-                        if (scelta2 == '1')
+                        while (true)
                         {
-                            List<Studente> studenti = studentiController.GetStudenti();
-                            Console.Clear();
                             TitoloModifica();
-                            Tabella();
-                            foreach (var studente in studenti)
-                            {
-                                Console.WriteLine($"{studente.Id,-5} {studente.Nome,-14} {studente.Cognome,-14} {studente.Eta,-4}");
-                            }
-                            Console.WriteLine(" ");
-                            Console.WriteLine(new string('-', 47));
-                            Console.WriteLine(" ");
-                            Console.Write("Inserisci l'Id da modificare: ");
-                            string? modificaId = Console.ReadLine();
-                            Console.Clear();
+                            Console.WriteLine("1. Modifica Studente");
+                            Console.WriteLine("2. Esci");
+                            char scelta2 = Console.ReadKey().KeyChar;
 
-                            if (int.TryParse(modificaId, out int modificaIdParse))
+                            if (scelta2 == '1')
                             {
-                                Studente? studenteEsistente = null;
+                                List<Studente> studenti = studentiController.GetStudenti();
+                                Console.Clear();
+                                TitoloModifica();
+                                Tabella();
                                 foreach (var studente in studenti)
                                 {
-                                    if (studente.Id == modificaIdParse)
-                                    {
-                                        studenteEsistente = studente;
-                                        break;
-                                    }
+                                    Console.WriteLine($"{studente.Id,-5} {studente.Nome,-14} {studente.Cognome,-14} {studente.Eta,-4}");
                                 }
+                                Console.WriteLine(" ");
+                                Console.WriteLine(new string('-', 47));
+                                Console.WriteLine(" ");
+                                Console.Write("Inserisci l'Id da modificare: ");
+                                string? modificaId = Console.ReadLine();
+                                Console.Clear();
 
-                                if (studenteEsistente != null)
+                                if (int.TryParse(modificaId, out int modificaIdParse))
                                 {
-                                    StudenteDaModificare(modificaIdParse, studenteEsistente);
-                                    Studente studenteModificato = new Studente();
-                                    Console.Write("Inserisci il nuvo nome: ");
-                                    string? modificaNome = Console.ReadLine();
-
-                                    if (string.IsNullOrWhiteSpace(modificaNome))
+                                    Studente? studenteEsistente = null;
+                                    foreach (var studente in studenti)
                                     {
-                                        ErroreModifica("La stringa è nulla o vuota.");
-                                        continue;
+                                        if (studente.Id == modificaIdParse)
+                                        {
+                                            studenteEsistente = studente;
+                                            break;
+                                        }
                                     }
-                                    studenteModificato.Nome = modificaNome;
 
-                                    Console.Clear();
-                                    StudenteDaModificare(modificaIdParse, studenteEsistente);
-                                    Console.Write("Inserisci il nuovo cognome: ");
-                                    string? modificaCognome = Console.ReadLine();
-
-                                    if (string.IsNullOrWhiteSpace(modificaCognome))
+                                    if (studenteEsistente != null)
                                     {
-                                        ErroreModifica("La stringa è nulla o vuota.");
-                                        continue;
-                                    }
-                                    studenteModificato.Cognome = modificaCognome;
+                                        StudenteDaModificare(modificaIdParse, studenteEsistente);
+                                        Studente studenteModificato = new Studente();
+                                        Console.Write("Inserisci il nuvo nome: ");
+                                        string? modificaNome = Console.ReadLine().Trim();
 
-                                    Console.Clear();
-                                    StudenteDaModificare(modificaIdParse, studenteEsistente);
-                                    Console.Write("Inserisci la nuova età: ");
-                                    string? eta = Console.ReadLine();
-                                    Console.Clear();
+                                        if (string.IsNullOrWhiteSpace(modificaNome))
+                                        {
+                                            ErroreModifica("La stringa è nulla o vuota.");
+                                            continue;
+                                        }
+                                        studenteModificato.Nome = modificaNome;
 
-                                    if (int.TryParse(eta, out int etaParse))
-                                    {
-                                        TitoloModifica();
-                                        studentiController.ModificaStudente(modificaIdParse, studenteModificato.Nome, studenteModificato.Cognome, etaParse);
-                                        Tabella();
-                                        Console.WriteLine($"{modificaIdParse,-5} {studenteModificato.Nome,-14} {studenteModificato.Cognome,-14} {etaParse,-4}");
-                                        Console.WriteLine(" ");
-                                        Console.WriteLine(new string('-', 47));
-                                        Console.WriteLine(" ");
-                                        Console.WriteLine("Modifica eseguita con successo");
-                                        PremiTasto();
+                                        Console.Clear();
+                                        StudenteDaModificare(modificaIdParse, studenteEsistente);
+                                        Console.Write("Inserisci il nuovo cognome: ");
+                                        string? modificaCognome = Console.ReadLine().Trim();
+
+                                        if (string.IsNullOrWhiteSpace(modificaCognome))
+                                        {
+                                            ErroreModifica("La stringa è nulla o vuota.");
+                                            continue;
+                                        }
+                                        studenteModificato.Cognome = modificaCognome;
+
+                                        Console.Clear();
+                                        StudenteDaModificare(modificaIdParse, studenteEsistente);
+                                        Console.Write("Inserisci la nuova età: ");
+                                        string? eta = Console.ReadLine();
+                                        Console.Clear();
+
+                                        if (int.TryParse(eta, out int etaParse))
+                                        {
+                                            TitoloModifica();
+                                            studenteModificato.Eta = etaParse;
+
+                                            var context = new ValidationContext(studenteModificato);
+                                            Validator.ValidateObject(studenteModificato, context, validateAllProperties: true);
+
+                                            studentiController.ModificaStudente(modificaIdParse, studenteModificato.Nome, studenteModificato.Cognome, studenteModificato.Eta);
+                                            Tabella();
+                                            Console.WriteLine($"{modificaIdParse,-5} {studenteModificato.Nome,-14} {studenteModificato.Cognome,-14} {etaParse,-4}");
+                                            Console.WriteLine(" ");
+                                            Console.WriteLine(new string('-', 47));
+                                            Console.WriteLine(" ");
+                                            Console.WriteLine("Modifica eseguita con successo");
+                                            PremiTasto();
+                                        }
+                                        else
+                                            ErroreModifica("Età non valida. Riprova.");
                                     }
                                     else
-                                        ErroreModifica("Età non valida. Riprova.");
+                                        ErroreModifica($"studente con ID {modificaIdParse} non trovato.");
                                 }
                                 else
-                                    ErroreModifica($"studente con ID {modificaIdParse} non trovato.");
+                                    ErroreModifica("Id non valida. Riprova.");
+                                continue;
+                            }
+                            else if (scelta2 == '2')
+                            {
+                                Console.Clear();
+                                break;
                             }
                             else
-                                ErroreModifica("Id non valida. Riprova.");
+                                ErroreModifica("Carattere non valido. Riprova.");
                             continue;
                         }
-                        else if (scelta2 == '2')
-                        {
-                            Console.Clear();
-                            break;
-                        }
-                        else
-                            ErroreModifica("Carattere non valido. Riprova.");
-                        continue;
+                    }
+                    catch (Exception ex)
+                    {
+                        ErroreErrore("Errore di validazione:");
+                        Console.WriteLine(" ");
+                        Console.WriteLine($"- {ex.Message}");
                     }
                     break;
 
@@ -230,7 +258,7 @@ class Program
                                 }
                                 if (studenteEsistente2 != null)
                                 {
-                                    Console.Clear(); 
+                                    Console.Clear();
                                     Console.WriteLine(" ");
                                     Tabella();
                                     Console.WriteLine($"{studenteEsistente2.Id,-5} {studenteEsistente2.Nome,-14} {studenteEsistente2.Cognome,-14} {studenteEsistente2.Eta,-4}");
@@ -306,6 +334,18 @@ class Program
         }
     }
 
+    static void ErroreErrore(string messaggio)
+    {
+        Console.Clear();
+        TitoloErrore();
+        Console.WriteLine(messaggio);
+    }
+    static void TitoloErrore()
+    {
+        Console.WriteLine(" ");
+        Console.WriteLine($"{new string('-', 20)} ERRORE {new string('-', 19)}");
+        Console.WriteLine(" ");
+    }
     static void ErroreElimina(string messaggio)
     {
         Console.Clear();
@@ -325,6 +365,8 @@ class Program
         Console.WriteLine(" ");
         Tabella();
         Console.WriteLine($"{modificaIdParse,-5} {studenteEsistente.Nome,-14} {studenteEsistente.Cognome,-14} {studenteEsistente.Eta,-4}");
+        Console.WriteLine(" ");
+        Console.WriteLine(new string('-', 47));
         Console.WriteLine(" ");
     }
     static void ErroreModifica(string messaggio)
