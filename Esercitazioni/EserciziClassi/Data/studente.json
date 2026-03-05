@@ -1,0 +1,20 @@
+[
+  {
+    "Id": 2,
+    "Nome": "margherita",
+    "Cognome": "longoni",
+    "Eta": 21
+  },
+  {
+    "Id": 4,
+    "Nome": "roberto",
+    "Cognome": "baggio",
+    "Eta": 23
+  },
+  {
+    "Id": 5,
+    "Nome": "bobby",
+    "Cognome": "fisher",
+    "Eta": 105
+  }
+]

@@ -1,5 +1,4 @@
 
-
 public class StudentiController
 {
     private readonly string path = "Data/studente.json";
