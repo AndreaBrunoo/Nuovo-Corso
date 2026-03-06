@@ -1,8 +1,8 @@
 [
   {
     "Id": 2,
-    "Nome": "margherita",
-    "Cognome": "longoni",
+    "Nome": "Margherita",
+    "Cognome": "Longoni",
     "Eta": 21
   },
   {
@@ -13,9 +13,9 @@
   },
   {
     "Id": 5,
-    "Nome": "bobby",
-    "Cognome": "fisher",
-    "Eta": 105
+    "Nome": "Bobby",
+    "Cognome": "Fisher",
+    "Eta": 95
   },
   {
     "Id": 7,

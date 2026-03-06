@@ -1,5 +1,4 @@
-﻿// guarda la lista 
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 class Program
 {
     static void Main(string[] args)
@@ -7,7 +6,6 @@ class Program
         Console.Clear();
         while (true)
         {
-            TitoloClasse();
             Menu();
             char scelta = Console.ReadKey().KeyChar;
             StudentiController studentiController = new StudentiController();
@@ -20,19 +18,22 @@ class Program
                     {
                         try
                         {
-
                             TitoloAggiunta();
-                            Console.WriteLine("1. Aggiungi Studente");
-                            Console.WriteLine("2. Esci");
-                            char scelta1 = Console.ReadKey().KeyChar;
+                            Console.ForegroundColor = ConsoleColor.Yellow;
+                            Console.WriteLine(" 1) Aggiungi Studente");
+                            Console.WriteLine(" 2) Esci");
+                            Console.ForegroundColor = ConsoleColor.Green;
+                            Console.WriteLine();
+                            Console.Write("Seleziona un'opzione: ");
+                            Console.ResetColor();
 
+                            char scelta1 = Console.ReadKey().KeyChar;
                             if (scelta1 == '1')
                             {
-                                Console.Clear();
-                                TitoloAggiunta();
                                 Studente nuovoStudente = new Studente();
-                                Console.Write("Inserisci il tuo nome: ");
-                                string? aggiuntaNome = Console.ReadLine().Trim();
+
+                                StampagialloConTitoloAggiunta("Inserisci il tuo nome: ");
+                                string? aggiuntaNome = Console.ReadLine();
 
                                 if (string.IsNullOrWhiteSpace(aggiuntaNome))
                                 {
@@ -41,10 +42,8 @@ class Program
                                 }
                                 nuovoStudente.Nome = aggiuntaNome;
 
-                                Console.Clear();
-                                TitoloAggiunta();
-                                Console.Write("Inserisci il tuo cognome: ");
-                                string? aggiuntaCognome = Console.ReadLine().Trim();
+                                StampagialloConTitoloAggiunta("Inserisci il tuo cognome: ");
+                                string? aggiuntaCognome = Console.ReadLine();
 
                                 if (string.IsNullOrWhiteSpace(aggiuntaCognome))
                                 {
@@ -53,27 +52,34 @@ class Program
                                 }
                                 nuovoStudente.Cognome = aggiuntaCognome;
 
-                                Console.Clear();
-                                TitoloAggiunta();
-                                Console.Write("Inserisci la tua età: ");
+                                StampagialloConTitoloAggiunta("Inserisci la tua età: ");
                                 string? aggiuntaEta = Console.ReadLine();
                                 Console.Clear();
 
                                 if (int.TryParse(aggiuntaEta, out int aggiuntaEtaParse))
                                 {
+                                    TitoloAggiunta();
+                                    nuovoStudente.Eta = aggiuntaEtaParse;
+
                                     var context = new ValidationContext(nuovoStudente);
 
                                     Validator.ValidateObject(nuovoStudente, context, validateAllProperties: true);
 
-                                    TitoloAggiunta();
-                                    nuovoStudente.Eta = aggiuntaEtaParse;
-                                    Console.WriteLine("Studente aggiunto con successo alla lista.");
-                                    Console.WriteLine(" ");
                                     TabellaSenzaId();
-                                    Console.WriteLine($"{nuovoStudente.Nome,-16} {nuovoStudente.Cognome,-16} {nuovoStudente.Eta,-5}");
-                                    Console.WriteLine(" ");
-                                    Console.WriteLine(new string('-', 47));
-                                    Console.WriteLine(" ");
+                                    Console.ForegroundColor = ConsoleColor.White;
+                                    Console.Write($"{nuovoStudente.Nome,-16} {nuovoStudente.Cognome,-16} ");
+
+                                    Console.ForegroundColor = ConsoleColor.Yellow;
+                                    Console.WriteLine($"{nuovoStudente.Eta,-5}");
+                                    Console.WriteLine();
+
+                                    Console.ForegroundColor = ConsoleColor.DarkBlue;
+                                    Console.WriteLine(new string('─', 47));
+                                    Console.WriteLine();
+
+                                    Console.ForegroundColor = ConsoleColor.Green;
+                                    Console.WriteLine("Studente aggiunto con successo alla lista.");
+                                    Console.ResetColor();
                                     studentiController.AggiungiStudente(nuovoStudente);
                                     PremiTasto();
                                 }
@@ -89,29 +95,37 @@ class Program
                             else
                                 ErroreAggiunta("Carattere non valido. Riprova.");
                             continue;
-
                         }
 
-                        catch (Exception ex)
+                        catch (ValidationException ex)
                         {
-                            ErroreErrore("Errore di validazione:");
-                            Console.WriteLine(" ");
+                            Console.Clear();
+                            TitoloAggiunta();
+                            Console.ForegroundColor = ConsoleColor.DarkRed;
+                            Console.WriteLine("Errore di validazione:");
                             Console.WriteLine($"- {ex.Message}");
+                            Console.ResetColor();
+                            PremiTasto();
                         }
                     }
                     break;
 
                 case '2':
                     Console.Clear();
-                    try
+                    while (true)
                     {
-                        while (true)
+                        try
                         {
                             TitoloModifica();
-                            Console.WriteLine("1. Modifica Studente");
-                            Console.WriteLine("2. Esci");
-                            char scelta2 = Console.ReadKey().KeyChar;
+                            Console.ForegroundColor = ConsoleColor.Yellow;
+                            Console.WriteLine(" 1) Modifica Studente");
+                            Console.WriteLine(" 2) Esci");
+                            Console.ForegroundColor = ConsoleColor.Green;
+                            Console.WriteLine();
+                            Console.Write("Seleziona un'opzione: ");
+                            Console.ResetColor();
 
+                            char scelta2 = Console.ReadKey().KeyChar;
                             if (scelta2 == '1')
                             {
                                 List<Studente> studenti = studentiController.GetStudenti();
@@ -120,14 +134,24 @@ class Program
                                 Tabella();
                                 foreach (var studente in studenti)
                                 {
-                                    Console.WriteLine($"{studente.Id,-5} {studente.Nome,-14} {studente.Cognome,-14} {studente.Eta,-4}");
+                                    Console.ForegroundColor = ConsoleColor.Yellow;
+                                    Console.Write($"{studente.Id,-5} ");
+                                    Console.ForegroundColor = ConsoleColor.White;
+                                    Console.Write($"{studente.Nome,-14} {studente.Cognome,-14} ");
+                                    Console.ForegroundColor = ConsoleColor.Yellow;
+                                    Console.WriteLine($"{studente.Eta,-4}");
+                                    Console.ResetColor();
                                 }
-                                Console.WriteLine(" ");
-                                Console.WriteLine(new string('-', 47));
-                                Console.WriteLine(" ");
+                                Console.WriteLine();
+                                Console.ForegroundColor = ConsoleColor.DarkBlue;
+                                Console.WriteLine(new string('─', 47));
+                                Console.WriteLine();
+                                Console.ForegroundColor = ConsoleColor.Yellow;
                                 Console.Write("Inserisci l'Id da modificare: ");
+                                Console.ResetColor();
                                 string? modificaId = Console.ReadLine();
                                 Console.Clear();
+                                
 
                                 if (int.TryParse(modificaId, out int modificaIdParse))
                                 {
@@ -145,8 +169,10 @@ class Program
                                     {
                                         StudenteDaModificare(modificaIdParse, studenteEsistente);
                                         Studente studenteModificato = new Studente();
+                                        Console.ForegroundColor = ConsoleColor.Yellow;
                                         Console.Write("Inserisci il nuvo nome: ");
-                                        string? modificaNome = Console.ReadLine().Trim();
+                                        Console.ResetColor();
+                                        string? modificaNome = Console.ReadLine();
 
                                         if (string.IsNullOrWhiteSpace(modificaNome))
                                         {
@@ -157,8 +183,10 @@ class Program
 
                                         Console.Clear();
                                         StudenteDaModificare(modificaIdParse, studenteEsistente);
+                                        Console.ForegroundColor = ConsoleColor.Yellow;
                                         Console.Write("Inserisci il nuovo cognome: ");
-                                        string? modificaCognome = Console.ReadLine().Trim();
+                                        Console.ResetColor();
+                                        string? modificaCognome = Console.ReadLine();
 
                                         if (string.IsNullOrWhiteSpace(modificaCognome))
                                         {
@@ -169,7 +197,9 @@ class Program
 
                                         Console.Clear();
                                         StudenteDaModificare(modificaIdParse, studenteEsistente);
+                                        Console.ForegroundColor = ConsoleColor.Yellow;
                                         Console.Write("Inserisci la nuova età: ");
+                                        Console.ResetColor();
                                         string? eta = Console.ReadLine();
                                         Console.Clear();
 
@@ -179,15 +209,24 @@ class Program
                                             studenteModificato.Eta = etaParse;
 
                                             var context = new ValidationContext(studenteModificato);
+
                                             Validator.ValidateObject(studenteModificato, context, validateAllProperties: true);
 
-                                            studentiController.ModificaStudente(modificaIdParse, studenteModificato.Nome, studenteModificato.Cognome, studenteModificato.Eta);
+                                            studentiController.ModificaStudente(modificaIdParse, studenteModificato.Nome, studenteModificato.Cognome, etaParse);
                                             Tabella();
-                                            Console.WriteLine($"{modificaIdParse,-5} {studenteModificato.Nome,-14} {studenteModificato.Cognome,-14} {etaParse,-4}");
-                                            Console.WriteLine(" ");
-                                            Console.WriteLine(new string('-', 47));
-                                            Console.WriteLine(" ");
+                                            Console.ForegroundColor = ConsoleColor.Yellow;
+                                            Console.Write($"{modificaIdParse,-5} ");
+                                            Console.ForegroundColor = ConsoleColor.White;
+                                            Console.Write($"{studenteModificato.Nome,-14} {studenteModificato.Cognome,-14} ");
+                                            Console.ForegroundColor = ConsoleColor.Yellow;
+                                            Console.WriteLine($"{etaParse,-4}");
+                                            Console.WriteLine();
+                                            Console.ForegroundColor = ConsoleColor.DarkBlue;
+                                            Console.WriteLine(new string('─', 47));
+                                            Console.WriteLine();
+                                            Console.ForegroundColor = ConsoleColor.Green;
                                             Console.WriteLine("Modifica eseguita con successo");
+                                            Console.ResetColor();
                                             PremiTasto();
                                         }
                                         else
@@ -208,13 +247,18 @@ class Program
                             else
                                 ErroreModifica("Carattere non valido. Riprova.");
                             continue;
+
                         }
-                    }
-                    catch (Exception ex)
-                    {
-                        ErroreErrore("Errore di validazione:");
-                        Console.WriteLine(" ");
-                        Console.WriteLine($"- {ex.Message}");
+                        catch (ValidationException ex)
+                        {
+                            Console.Clear();
+                            TitoloModifica();
+                            Console.ForegroundColor = ConsoleColor.DarkRed;
+                            Console.WriteLine("Errore di validazione:");
+                            Console.WriteLine($"- {ex.Message}");
+                            Console.ResetColor();
+                            PremiTasto();
+                        }
                     }
                     break;
 
@@ -224,8 +268,14 @@ class Program
                     while (true)
                     {
                         TitoloElimina();
-                        Console.WriteLine("1. Elimina Studente");
-                        Console.WriteLine("2. Esci");
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine(" 1) Elimina Studente");
+                        Console.WriteLine(" 2) Esci");
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine();
+                        Console.Write("Seleziona un'opzione: ");
+                        Console.ResetColor();
+
                         char scelta3 = Console.ReadKey().KeyChar;
                         if (scelta3 == '1')
                         {
@@ -236,12 +286,22 @@ class Program
 
                             foreach (var studente in studentiDaEliminare)
                             {
-                                Console.WriteLine($"{studente.Id,-5} {studente.Nome,-14} {studente.Cognome,-14} {studente.Eta,-4}");
+                                Console.ForegroundColor = ConsoleColor.Yellow;
+                                Console.Write($"{studente.Id,-5} ");
+                                Console.ForegroundColor = ConsoleColor.White;
+                                Console.Write($"{studente.Nome,-14} {studente.Cognome,-14} ");
+                                Console.ForegroundColor = ConsoleColor.Yellow;
+                                Console.WriteLine($"{studente.Eta,-4}");
+                                Console.ResetColor();
                             }
-                            Console.WriteLine(" ");
-                            Console.WriteLine(new string('-', 47));
-                            Console.WriteLine(" ");
+
+                            Console.WriteLine();
+                            Console.ForegroundColor = ConsoleColor.DarkBlue;
+                            Console.WriteLine(new string('─', 47));
+                            Console.WriteLine();
+                            Console.ForegroundColor = ConsoleColor.Yellow;
                             Console.Write("Inserisci l'Id da Eliminare: ");
+                            Console.ResetColor();
                             string? idEliminare = Console.ReadLine();
                             Console.Clear();
 
@@ -259,20 +319,37 @@ class Program
                                 if (studenteEsistente2 != null)
                                 {
                                     Console.Clear();
-                                    Console.WriteLine(" ");
+                                    TitoloElimina();
                                     Tabella();
-                                    Console.WriteLine($"{studenteEsistente2.Id,-5} {studenteEsistente2.Nome,-14} {studenteEsistente2.Cognome,-14} {studenteEsistente2.Eta,-4}");
-                                    Console.WriteLine(" ");
-                                    Console.WriteLine(new string('-', 47));
-                                    Console.WriteLine(" ");
-                                    Console.WriteLine("Sei sicuro di voler eliminare questo studente?");
-                                    Console.WriteLine("Premi 's' per confermare o");
-                                    Console.Write("altro per tornare al menu: ");
+                                    Console.ForegroundColor = ConsoleColor.Yellow;
+                                    Console.Write($"{studenteEsistente2.Id,-5} ");
+                                    Console.ForegroundColor = ConsoleColor.White;
+                                    Console.Write($"{studenteEsistente2.Nome,-14} {studenteEsistente2.Cognome,-14} ");
+                                    Console.ForegroundColor = ConsoleColor.Yellow;
+                                    Console.WriteLine($"{studenteEsistente2.Eta,-4}");
+                                    Console.WriteLine();
+
+                                    Console.ForegroundColor = ConsoleColor.DarkBlue;
+                                    Console.WriteLine(new string('─', 47));
+                                    Console.WriteLine();
+                                    Console.ForegroundColor = ConsoleColor.Green;
+                                    Console.WriteLine("Vuoi davvero procedere?");
+
+                                    Console.WriteLine();
+                                    Console.ForegroundColor = ConsoleColor.Yellow;
+                                    Console.Write(" Conferma con [S]  |  Annulla con qualsiasi altro tasto: ");
+                                    Console.ResetColor();
+
                                     char scelta31 = Console.ReadKey().KeyChar;
                                     if (scelta31 == 's' || scelta31 == 'S')
                                     {
+                                        Console.Clear();
                                         studentiController.EliminaStudente(idEliminareParse);
-                                        ErroreElimina("Eliminazione eseguita con successo.");
+                                        TitoloElimina();
+                                        Console.ForegroundColor = ConsoleColor.Green;
+                                        Console.WriteLine("Lo studente è stato eliminato.");
+                                        Console.ResetColor();
+                                        PremiTasto();
                                     }
                                     else
                                         Console.Clear();
@@ -297,28 +374,64 @@ class Program
 
                 case '4':
 
-                    // Volevo aggiungere se esiste il json o no
-                    TestoConClear($"{new string('-', 15)} LISTA STUDENTI {new string('-', 16)}");
+                    Console.Clear();
+                    Console.ForegroundColor = ConsoleColor.Cyan;
+                    Console.WriteLine($"{new string('=', 47)}");
+                    Console.WriteLine("                LISTA STUDENTI");
+                    Console.WriteLine($"{new string('=', 47)}");
+                    Console.ResetColor();
+                    Console.WriteLine();
                     List<Studente> listaStudenti = studentiController.GetStudenti();
                     Tabella();
                     foreach (var studente in listaStudenti)
                     {
-                        Console.WriteLine($"{studente.Id,-5} {studente.Nome,-14} {studente.Cognome,-14} {studente.Eta,-4}");
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.Write($"{studente.Id,-5} ");
+                        Console.ForegroundColor = ConsoleColor.White;
+                        Console.Write($"{studente.Nome,-14} {studente.Cognome,-14} ");
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine($"{studente.Eta,-4}");
+                        Console.ResetColor();
                     }
-                    PremiTasto();
-                    Console.Clear();
+                    PremiTastoConTabella();
                     break;
 
                 case '5':
 
-                    TestoConClear($"{new string('-', 20)} ESCI {new string('-', 21)}");
-                    Console.WriteLine("Sei sicuro di voler uscire?");
-                    Console.WriteLine("Premi 's' per confermare o");
-                    Console.Write("altro per tornare al menu: ");
-                    char scelta7 = Console.ReadKey().KeyChar;
-                    if (scelta7 == 's' || scelta7 == 'S')
+                    Console.Clear();
+                    Console.ForegroundColor = ConsoleColor.DarkCyan;
+                    Console.WriteLine($"{new string('=', 47)}");
+                    Console.WriteLine("                     ESCI");
+                    Console.WriteLine($"{new string('=', 47)}");
+
+                    Console.WriteLine();
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.WriteLine("Vuoi davvero procedere?");
+
+                    Console.WriteLine();
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.Write(" Conferma con [S]  |  Annulla con qualsiasi altro tasto: ");
+                    Console.ResetColor();
+
+                    char scelta5 = Console.ReadKey(true).KeyChar;
+
+                    if (char.ToUpper(scelta5) == 'S')
                     {
-                        TestoConClear("Arrivederci!");
+                        Console.Clear();
+
+                        Console.ForegroundColor = ConsoleColor.Cyan;
+                        Console.WriteLine();
+                        Console.WriteLine("Chiusura in corso...");
+                        Console.ResetColor();
+
+                        string messaggio = "Grazie per aver utilizzato il programma.";
+                        foreach (char c in messaggio)
+                        {
+                            Console.ForegroundColor = ConsoleColor.DarkGray;
+                            Console.Write(c);
+                            Thread.Sleep(40);
+                        }
+                        Thread.Sleep(600);
                         Environment.Exit(0);
                     }
                     else
@@ -327,111 +440,153 @@ class Program
 
                 default:
                     Console.Clear();
-                    TitoloClasse();
+                    TitoloGestioneStudenti();
+                    Console.ForegroundColor = ConsoleColor.DarkRed;
                     Console.WriteLine("Scelta non valida. Riprova.");
+                    Console.ResetColor();
+                    PremiTasto();
                     break;
             }
         }
-    }
-
-    static void ErroreErrore(string messaggio)
-    {
-        Console.Clear();
-        TitoloErrore();
-        Console.WriteLine(messaggio);
-    }
-    static void TitoloErrore()
-    {
-        Console.WriteLine(" ");
-        Console.WriteLine($"{new string('-', 20)} ERRORE {new string('-', 19)}");
-        Console.WriteLine(" ");
-    }
-    static void ErroreElimina(string messaggio)
-    {
-        Console.Clear();
-        TitoloElimina();
-        Console.WriteLine(messaggio);
-    }
-    static void TitoloElimina()
-    {
-        Console.WriteLine(" ");
-        Console.WriteLine($"{new string('-', 15)} ELIMINA STUDENTE {new string('-', 14)}");
-        Console.WriteLine(" ");
-    }
-    static void StudenteDaModificare(int modificaIdParse, Studente studenteEsistente)
-    {
-        TitoloModifica();
-        Console.WriteLine("Studente che vuoi modificare: ");
-        Console.WriteLine(" ");
-        Tabella();
-        Console.WriteLine($"{modificaIdParse,-5} {studenteEsistente.Nome,-14} {studenteEsistente.Cognome,-14} {studenteEsistente.Eta,-4}");
-        Console.WriteLine(" ");
-        Console.WriteLine(new string('-', 47));
-        Console.WriteLine(" ");
-    }
-    static void ErroreModifica(string messaggio)
-    {
-        Console.Clear();
-        TitoloModifica();
-        Console.WriteLine(messaggio);
-    }
-    static void TitoloModifica()
-    {
-        Console.WriteLine(" ");
-        Console.WriteLine($"{new string('-', 14)} MODIFICA STUDENTE {new string('-', 14)}");
-        Console.WriteLine(" ");
-    }
-    static void ErroreAggiunta(string messaggio)
-    {
-        Console.Clear();
-        TitoloAggiunta();
-        Console.WriteLine(messaggio);
-    }
-    static void TitoloAggiunta()
-    {
-        Console.WriteLine(" ");
-        Console.WriteLine($"{new string('-', 14)} AGGIUNGI STUDENTI {new string('-', 14)}");
-        Console.WriteLine(" ");
-    }
-    static void PremiTasto()
-    {
-        Console.WriteLine(" ");
-        Console.WriteLine(new string('-', 47));
-        Console.Write("Premi un tasto per tornare al menu...");
-        Console.ReadKey();
-        Console.Clear();
-    }
-    static void Tabella()
-    {
-        Console.WriteLine($"{"ID",-5} {"NOME",-14} {"COGNOME",-14} {"ETA",-4}");
-        Console.WriteLine(new string('-', 47));
-        Console.WriteLine(" ");
-    }
-    static void TabellaSenzaId()
-    {
-        Console.WriteLine($"{"NOME",-16} {"COGNOME",-16} {"ETA",-5}");
-        Console.WriteLine(new string('-', 47));
-        Console.WriteLine(" ");
-    }
-    static void Menu()
-    {
-        Console.WriteLine("1. Aggiungi studente");
-        Console.WriteLine("2. Modifica studente");
-        Console.WriteLine("3. Elimina studente");
-        Console.WriteLine("4. Visualizza lista studenti");
-        Console.WriteLine("5. Esci");
-    }
-    static void TestoConClear(string messaggio)
-    {
-        Console.Clear();
-        Console.WriteLine(" ");
-        Console.WriteLine(messaggio);
-        Console.WriteLine(" ");
-    }
-    static void TitoloClasse()
-    {
-        Console.WriteLine(" ");
-        Console.WriteLine($"{new string('-', 20)} CLASSE {new string('-', 19)}");
-        Console.WriteLine(" ");
+        //────
+        void StampagialloConTitoloAggiunta(string messaggio)
+        {
+            Console.Clear();
+            TitoloAggiunta();
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.Write(messaggio);
+            Console.ResetColor();
+        }
+        void ErroreElimina(string messaggio)
+        {
+            Console.Clear();
+            TitoloElimina();
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.WriteLine(messaggio);
+            Console.ResetColor();
+            PremiTasto();
+        }
+        void TitoloElimina()
+        {
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine($"{new string('=', 47)}");
+            Console.WriteLine("               ELIMINA STUDENTI");
+            Console.WriteLine($"{new string('=', 47)}");
+            Console.ResetColor();
+            Console.WriteLine();
+        }
+        void StudenteDaModificare(int modificaIdParse, Studente studenteEsistente)
+        {
+            TitoloModifica();
+            Tabella();
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.Write($"{modificaIdParse,-5} ");
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.Write($"{studenteEsistente.Nome,-14} {studenteEsistente.Cognome,-14} ");
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine($"{studenteEsistente.Eta,-4}");
+            Console.WriteLine();
+            Console.ForegroundColor = ConsoleColor.DarkBlue;
+            Console.WriteLine(new string('─', 47));
+            Console.ResetColor();
+            Console.WriteLine();
+        }
+        void ErroreModifica(string messaggio)
+        {
+            Console.Clear();
+            TitoloModifica();
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.WriteLine(messaggio);
+            Console.ResetColor();
+            PremiTasto();
+        }
+        void TitoloModifica()
+        {
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine($"{new string('=', 47)}");
+            Console.WriteLine("              MODIFICA STUDENTI");
+            Console.WriteLine($"{new string('=', 47)}");
+            Console.ResetColor();
+            Console.WriteLine();
+        }
+        void ErroreAggiunta(string messaggio)
+        {
+            Console.Clear();
+            TitoloAggiunta();
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.WriteLine(messaggio);
+            Console.ResetColor();
+            PremiTasto();
+        }
+        void TitoloAggiunta()
+        {
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine($"{new string('=', 47)}");
+            Console.WriteLine("              AGGIUNTA STUDENTI");
+            Console.WriteLine($"{new string('=', 47)}");
+            Console.ResetColor();
+            Console.WriteLine();
+        }
+        void PremiTasto()
+        {
+            Console.WriteLine();
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine(new string('─', 47));
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.Write("Premi un tasto per tornare al menu...");
+            Console.ResetColor();
+            Console.ReadKey();
+            Console.Clear();
+        }
+        void PremiTastoConTabella()
+        {
+            Console.WriteLine();
+            Console.ForegroundColor = ConsoleColor.DarkBlue;
+            Console.WriteLine(new string('─', 47));
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.Write("Premi un tasto per tornare al menu...");
+            Console.ResetColor();
+            Console.ReadKey();
+            Console.Clear();
+        }
+        void Tabella()
+        {
+            Console.ForegroundColor = ConsoleColor.DarkBlue;
+            Console.WriteLine($"{"ID",-5} {"NOME",-14} {"COGNOME",-14} {"ETA",-4}");
+            Console.WriteLine(new string('─', 47));
+            Console.WriteLine();
+            Console.ResetColor();
+        }
+        void TabellaSenzaId()
+        {
+            Console.ForegroundColor = ConsoleColor.DarkBlue;
+            Console.WriteLine($"{"NOME",-16} {"COGNOME",-16} {"ETA",-5}");
+            Console.WriteLine(new string('─', 47));
+            Console.WriteLine();
+            Console.ResetColor();
+        }
+        void Menu()
+        {
+            TitoloGestioneStudenti();
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("  1) Aggiungi studente");
+            Console.WriteLine("  2) Modifica studente");
+            Console.WriteLine("  3) Elimina studente");
+            Console.WriteLine("  4) Visualizza lista studenti");
+            Console.WriteLine("  5) Esci");
+            Console.WriteLine();
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.Write("Seleziona un'opzione: ");
+            Console.ResetColor();
+        }
+        void TitoloGestioneStudenti()
+        {
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine($"{new string('=', 47)}");
+            Console.WriteLine("              GESTIONE STUDENTI");
+            Console.WriteLine($"{new string('=', 47)}");
+            Console.ResetColor();
+            Console.WriteLine();
+        }
     }
 }
