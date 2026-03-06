@@ -448,7 +448,8 @@ class Program
                     break;
             }
         }
-        //────
+
+    //──────────────────────────────────── FUNZIONI ──────────────────────────────────────
         void StampagialloConTitoloAggiunta(string messaggio)
         {
             Console.Clear();
