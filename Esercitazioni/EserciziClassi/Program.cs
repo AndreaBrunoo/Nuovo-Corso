@@ -57,34 +57,64 @@ class Program
                                 Console.Clear();
 
                                 if (int.TryParse(aggiuntaEta, out int aggiuntaEtaParse))
-                                {
-                                    TitoloAggiunta();
                                     nuovoStudente.Eta = aggiuntaEtaParse;
-
-                                    var context = new ValidationContext(nuovoStudente);
-
-                                    Validator.ValidateObject(nuovoStudente, context, validateAllProperties: true);
-
-                                    TabellaSenzaId();
-                                    Console.ForegroundColor = ConsoleColor.White;
-                                    Console.Write($"{nuovoStudente.Nome,-16} {nuovoStudente.Cognome,-16} ");
-
-                                    Console.ForegroundColor = ConsoleColor.Yellow;
-                                    Console.WriteLine($"{nuovoStudente.Eta,-5}");
-                                    Console.WriteLine();
-
-                                    Console.ForegroundColor = ConsoleColor.DarkBlue;
-                                    Console.WriteLine(new string('─', 47));
-                                    Console.WriteLine();
-
-                                    Console.ForegroundColor = ConsoleColor.Green;
-                                    Console.WriteLine("Studente aggiunto con successo alla lista.");
-                                    Console.ResetColor();
-                                    studentiController.AggiungiStudente(nuovoStudente);
-                                    PremiTasto();
-                                }
                                 else
+                                {
                                     ErroreAggiunta("Età non valida. Riprova.");
+                                    continue;
+                                }
+
+                                StampagialloConTitoloAggiunta("Inserisci la tua Email: ");
+                                string? aggiuntaEmail = Console.ReadLine().Trim();
+                                nuovoStudente.Email = aggiuntaEmail;
+
+                                StampagialloConTitoloAggiunta("Inserisci il tuo numero di telefono: ");
+                                string? aggiuntaTelefono = Console.ReadLine().Trim();
+                                nuovoStudente.Telefono = aggiuntaTelefono;
+
+                                List<StudenteInteresse> interessi = new List<StudenteInteresse>();
+
+                                while (true)
+                                {
+                                    StampagialloConTitoloAggiunta("Inserisci almeno due interessi.");
+                                    Console.WriteLine();
+                                    Console.Write(" Inserisci interesse  |  Annulla con 0: ");
+                                    StudenteInteresse interesse = new StudenteInteresse();
+                                    string aggiuntaInteresse = Console.ReadLine().Trim();
+
+                                    if (aggiuntaInteresse != "0")
+                                    {
+                                        interesse.NomeInteresse = aggiuntaInteresse;
+                                        interessi.Add(interesse);
+                                    }
+                                    else
+                                        break;
+                                }
+                                nuovoStudente.Interessi = interessi;
+                                TitoloAggiunta();
+
+
+                                var context = new ValidationContext(nuovoStudente);
+
+                                Validator.ValidateObject(nuovoStudente, context, validateAllProperties: true);
+
+                                TabellaSenzaId();
+                                Console.ForegroundColor = ConsoleColor.White;
+                                Console.Write($"{nuovoStudente.Nome,-16} {nuovoStudente.Cognome,-16} ");
+
+                                Console.ForegroundColor = ConsoleColor.Yellow;
+                                Console.WriteLine($"{nuovoStudente.Eta,-5}");
+                                Console.WriteLine();
+
+                                Console.ForegroundColor = ConsoleColor.DarkBlue;
+                                Console.WriteLine(new string('─', 47));
+                                Console.WriteLine();
+
+                                Console.ForegroundColor = ConsoleColor.Green;
+                                Console.WriteLine("Studente aggiunto con successo alla lista.");
+                                Console.ResetColor();
+                                studentiController.AggiungiStudente(nuovoStudente);
+                                PremiTasto();
                                 continue;
                             }
                             else if (scelta1 == '2')
@@ -151,7 +181,7 @@ class Program
                                 Console.ResetColor();
                                 string? modificaId = Console.ReadLine();
                                 Console.Clear();
-                                
+
 
                                 if (int.TryParse(modificaId, out int modificaIdParse))
                                 {
@@ -205,32 +235,68 @@ class Program
 
                                         if (int.TryParse(eta, out int etaParse))
                                         {
-                                            TitoloModifica();
                                             studenteModificato.Eta = etaParse;
-
-                                            var context = new ValidationContext(studenteModificato);
-
-                                            Validator.ValidateObject(studenteModificato, context, validateAllProperties: true);
-
-                                            studentiController.ModificaStudente(modificaIdParse, studenteModificato.Nome, studenteModificato.Cognome, etaParse);
-                                            Tabella();
-                                            Console.ForegroundColor = ConsoleColor.Yellow;
-                                            Console.Write($"{modificaIdParse,-5} ");
-                                            Console.ForegroundColor = ConsoleColor.White;
-                                            Console.Write($"{studenteModificato.Nome,-14} {studenteModificato.Cognome,-14} ");
-                                            Console.ForegroundColor = ConsoleColor.Yellow;
-                                            Console.WriteLine($"{etaParse,-4}");
-                                            Console.WriteLine();
-                                            Console.ForegroundColor = ConsoleColor.DarkBlue;
-                                            Console.WriteLine(new string('─', 47));
-                                            Console.WriteLine();
-                                            Console.ForegroundColor = ConsoleColor.Green;
-                                            Console.WriteLine("Modifica eseguita con successo");
-                                            Console.ResetColor();
-                                            PremiTasto();
                                         }
+
                                         else
+                                        {
                                             ErroreModifica("Età non valida. Riprova.");
+                                            continue;
+                                        }
+
+
+                                        StampagialloConTitoloAggiunta("Inserisci la tua Email: ");
+                                        string? aggiuntaEmail = Console.ReadLine().Trim();
+                                        studenteModificato.Email = aggiuntaEmail;
+
+                                        StampagialloConTitoloAggiunta("Inserisci il tuo numero di telefono: ");
+                                        string? aggiuntaTelefono = Console.ReadLine().Trim();
+                                        studenteModificato.Telefono = aggiuntaTelefono;
+
+                                        List<StudenteInteresse> interessi = new List<StudenteInteresse>();
+
+                                        while (true)
+                                        {
+                                            StampagialloConTitoloAggiunta("Inserisci almeno due interessi.");
+                                            Console.WriteLine();
+                                            Console.Write(" Inserisci interesse  |  Annulla con 0: ");
+                                            StudenteInteresse interesse = new StudenteInteresse();
+                                            string aggiuntaInteresse = Console.ReadLine().Trim();
+
+                                            if (aggiuntaInteresse != "0")
+                                            {
+                                                interesse.NomeInteresse = aggiuntaInteresse;
+                                                interessi.Add(interesse);
+                                            }
+                                            else
+                                                break;
+                                        }
+                                        studenteModificato.Interessi = interessi;
+
+                                        TitoloModifica();
+
+
+                                        var context = new ValidationContext(studenteModificato);
+
+                                        Validator.ValidateObject(studenteModificato, context, validateAllProperties: true);
+
+                                        studentiController.ModificaStudente(modificaIdParse, studenteModificato.Nome, studenteModificato.Cognome, etaParse, studenteModificato.Email, studenteModificato.Telefono,studenteModificato.Interessi );
+                                        Tabella();
+                                        Console.ForegroundColor = ConsoleColor.Yellow;
+                                        Console.Write($"{modificaIdParse,-5} ");
+                                        Console.ForegroundColor = ConsoleColor.White;
+                                        Console.Write($"{studenteModificato.Nome,-14} {studenteModificato.Cognome,-14} ");
+                                        Console.ForegroundColor = ConsoleColor.Yellow;
+                                        Console.WriteLine($"{etaParse,-4}");
+                                        Console.WriteLine();
+                                        Console.ForegroundColor = ConsoleColor.DarkBlue;
+                                        Console.WriteLine(new string('─', 47));
+                                        Console.WriteLine();
+                                        Console.ForegroundColor = ConsoleColor.Green;
+                                        Console.WriteLine("Modifica eseguita con successo");
+                                        Console.ResetColor();
+                                        PremiTasto();
+
                                     }
                                     else
                                         ErroreModifica($"studente con ID {modificaIdParse} non trovato.");
@@ -390,7 +456,13 @@ class Program
                         Console.ForegroundColor = ConsoleColor.White;
                         Console.Write($"{studente.Nome,-14} {studente.Cognome,-14} ");
                         Console.ForegroundColor = ConsoleColor.Yellow;
-                        Console.WriteLine($"{studente.Eta,-4}");
+                        Console.Write($"{studente.Eta,-4}");
+                        Console.Write($"{studente.Email,-20} {studente.Telefono,-20}");
+                        foreach (var interesse in studente.Interessi)
+                        {
+                            Console.Write($"{interesse.NomeInteresse} ");
+                        }
+                        Console.WriteLine();
                         Console.ResetColor();
                     }
                     PremiTastoConTabella();
@@ -449,7 +521,7 @@ class Program
             }
         }
 
-    //──────────────────────────────────── FUNZIONI ──────────────────────────────────────
+        //──────────────────────────────────── FUNZIONI ──────────────────────────────────────
         void StampagialloConTitoloAggiunta(string messaggio)
         {
             Console.Clear();

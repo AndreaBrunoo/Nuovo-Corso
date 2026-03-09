@@ -13,4 +13,11 @@ public class Studente
     public string Cognome { get; set; } = "";
     [Range(6, 99, ErrorMessage = "Inserisci un età compresa tra 6 e 99.")]
     public int Eta { get; set; }
+
+    [EmailAddress(ErrorMessage = "Email non valida")]
+    public string Email { get; set; }
+
+    [Phone(ErrorMessage = "Numero di telefono non valido")]
+    public string Telefono { get; set; }
+    public List<StudenteInteresse> Interessi { get; set; }
 }

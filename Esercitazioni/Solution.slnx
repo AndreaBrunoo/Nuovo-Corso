@@ -1,4 +1,5 @@
 <Solution>
+  <Project Path="ArchetipoWebAPI/ArchetipoWebAPI.csproj" />
   <Project Path="Array1/Array1.csproj" />
   <Project Path="Calcolatrice1/Calcolatrice1.csproj" />
   <Project Path="Calcolatrice2/Calcolatrice2.csproj" />

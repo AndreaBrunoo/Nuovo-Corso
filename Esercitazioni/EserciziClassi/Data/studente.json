@@ -1,26 +1,21 @@
 [
   {
-    "Id": 2,
-    "Nome": "Margherita",
-    "Cognome": "Longoni",
-    "Eta": 21
-  },
-  {
-    "Id": 4,
-    "Nome": "roberto",
-    "Cognome": "baggio",
-    "Eta": 23
-  },
-  {
-    "Id": 5,
-    "Nome": "Bobby",
-    "Cognome": "Fisher",
-    "Eta": 95
-  },
-  {
-    "Id": 7,
-    "Nome": "gianni",
-    "Cognome": "gianni",
-    "Eta": 23
+    "Id": 15,
+    "Nome": "mario",
+    "Cognome": "metol",
+    "Eta": 34,
+    "Email": "SHFJITKG@gmail.com",
+    "Telefono": "0987654321",
+    "Interessi": [
+      {
+        "NomeInteresse": "regno"
+      },
+      {
+        "NomeInteresse": "unitp"
+      },
+      {
+        "NomeInteresse": "pallo"
+      }
+    ]
   }
 ]

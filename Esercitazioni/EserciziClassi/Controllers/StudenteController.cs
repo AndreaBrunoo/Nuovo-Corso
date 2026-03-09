@@ -28,7 +28,7 @@ public class StudentiController
         Salva();
     }
 
-    public void ModificaStudente(int id, string nome, string cognome, int eta)
+    public void ModificaStudente(int id, string nome, string cognome, int eta, string email, string numero , List<StudenteInteresse> interessi)
     {
         Studente studenteEsistente = null;
         foreach (var studente in studenti)
@@ -44,6 +44,9 @@ public class StudentiController
             studenteEsistente.Nome = nome;
             studenteEsistente.Cognome = cognome;
             studenteEsistente.Eta = eta;
+            studenteEsistente.Email = email;
+            studenteEsistente.Telefono = numero;
+            studenteEsistente.Interessi = interessi;
             Salva();
         }
     }
