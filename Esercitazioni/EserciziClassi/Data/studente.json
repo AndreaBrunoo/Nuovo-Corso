@@ -1,20 +1,97 @@
 [
   {
     "Id": 15,
-    "Nome": "mario",
-    "Cognome": "metol",
-    "Eta": 34,
-    "Email": "SHFJITKG@gmail.com",
-    "Telefono": "0987654321",
+    "Nome": "giulio",
+    "Cognome": "cesare",
+    "Eta": 12,
+    "Email": "roma@gmail.com",
+    "Telefono": "3337779999",
     "Interessi": [
       {
-        "NomeInteresse": "regno"
+        "NomeInteresse": "roma"
       },
       {
-        "NomeInteresse": "unitp"
+        "NomeInteresse": "invadere"
+      }
+    ]
+  },
+  {
+    "Id": 16,
+    "Nome": "andrea",
+    "Cognome": "bruno",
+    "Eta": 19,
+    "Email": "andrea@gmail.com",
+    "Telefono": "3496266961",
+    "Interessi": [
+      {
+        "NomeInteresse": "moto"
       },
       {
-        "NomeInteresse": "pallo"
+        "NomeInteresse": "scacchi"
+      }
+    ]
+  },
+  {
+    "Id": 17,
+    "Nome": "marghe",
+    "Cognome": "longoni",
+    "Eta": 21,
+    "Email": "marghe@longoni.com",
+    "Telefono": "34676545454",
+    "Interessi": [
+      {
+        "NomeInteresse": "mare"
+      },
+      {
+        "NomeInteresse": "milano"
+      }
+    ]
+  },
+  {
+    "Id": 18,
+    "Nome": "mauri",
+    "Cognome": "bruno",
+    "Eta": 60,
+    "Email": "mauri@gmail.com",
+    "Telefono": "3897810495",
+    "Interessi": [
+      {
+        "NomeInteresse": "mare"
+      },
+      {
+        "NomeInteresse": "monti"
+      }
+    ]
+  },
+  {
+    "Id": 19,
+    "Nome": "claudio",
+    "Cognome": "baglio",
+    "Eta": 56,
+    "Email": "regino@yahoo.it",
+    "Telefono": "3335554444",
+    "Interessi": [
+      {
+        "NomeInteresse": "erba"
+      },
+      {
+        "NomeInteresse": "piante"
+      }
+    ]
+  },
+  {
+    "Id": 20,
+    "Nome": "vin",
+    "Cognome": "diesel",
+    "Eta": 34,
+    "Email": "vin@gmail.it",
+    "Telefono": "3333333333",
+    "Interessi": [
+      {
+        "NomeInteresse": "motori"
+      },
+      {
+        "NomeInteresse": "armi"
       }
     ]
   }
