@@ -247,3 +247,88 @@ Flusso:
     ● Il Controller restituisce risposta HTTP a un DTO
     ● Viene generata la response in JSON a Angular
 
+# WEBAPI RUBRICACOMPLETA V1
+
+# Modelli:
+
+    - Un modello contatto con proprietà id, nomecompleto, password, telefono, una lista di interessi, stato attivo e data di creazione 
+    - Un altro modello indirizzo con proprietà come id, username, passwordhash, e ruolo per gestire l'autenticazione e autorizzazione e il collegamento con i contatti
+    - Data annotation e decorator
+
+---
+# DTO:
+
+    - Un DTO contattoDTO con solo alcune proprietà per esporre i dati in modo sicuro, potrebbe esporre solo id, nome completo e telefono
+    - Un DTO userDto con solo Username e ruolo senza esporre poassword o dati sensibili
+
+---
+# Controllers:
+
+    - Un Controller contattocontroller con endpoint CRUD per gestire i contatti
+    - Un Controller usercontroller per gestire la registrazione e gestione degli utenti
+    - Un Controller AuthController per gestire l'autenticazione e la generazione dei token JWT
+
+---
+# Services:
+
+    - Un servizio ContattoService che contiene la logica di business per i contatti
+    - Un servizio UserService per la logica di gestione degli utenti e delle credenziali
+    - Un servizio AuthService per la logica di autenticazione e gestione dei token JWT
+
+---
+# Repositories:
+
+    - Un Repository ContattoRepository che interagisca con il database usando Entity Framework Core
+    - Un Repository UserRepository per gestire gli utenti e le credenziali di autenticazione 
+    - un Repository AuthRepository per gestire la logica di autenticazione e validazione delle credenziali
+
+--- 
+# Data:
+
+    - un DbContext ApplicationDbContext che rappresenta il database e contiene `DbSet<Contatto>` `DbSet<User>`
+    - Middleware per gestire l'autenticazione JWT e proteggere gli endpoint 
+    - Configurazione in program.cs per registrare i servizi , configurare Entity Framework, e abilitare l'autenticazione JWT 
+
+--- 
+# Midlleware:
+
+    - Un middleware JwtMiddleware per intercettare le richieste e validare i token jwt, assicurando che solo utent autenticati possanno accedere agli endpoint protetti
+    - Un middleware di gestione degli errori per catturare eccezioni globali e restituire risposte HTTP appropriate in caso di errori
+
+---
+# Helpers:
+
+    - Un Helper JwtHelper per generare e validare i token JWT
+    - Un helper PasswordHelper per gestire l'hashing e la verifica delle password
+
+---
+# Configurazione in Program.cs:
+
+    - La configurazione del Db con Entity Framework ed i JWT
+
+---
+# Migrations:
+
+    Migrazioni per creare le tabelle Contatti e Users nel database usando Entity Framework Core 
+
+---
+
+Installazione webApi
+```bash
+// Entity Framework Core e SQLite
+dotnet add package Microsoft.EntityFrameworkCore
+dotnet add package Microsoft.EntityFrameworkCore.Sqlite
+
+// Strumenti per migrazioni 
+dotnet add package Microsoft.EntityFrameworkCore.Design
+dotnet add package Microsoft.EntityFrameworkCore.Tools
+
+// JWT e autenticazione
+dotnet add package Microsoft.AspNetCore.Authentication.JwtBearer
+dotnet add package System.IdentityModel.Tokens.Jwt
+dotnet add package Microsoft.IdentityModel.Tokens
+```
+
+# Importante 
+
+Per utilizzare SQLite bisogna installare la dll sul sito web di SQLite e completare la procedura di aggiunta al Path nelle variabili d'ambiente.

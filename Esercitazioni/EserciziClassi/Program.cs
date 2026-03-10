@@ -137,7 +137,7 @@ class Program
                                 Console.Write($"{nuovoStudente.Nome,-10} {nuovoStudente.Cognome,-10} ");
 
                                 Console.ForegroundColor = ConsoleColor.Yellow;
-                                Console.Write($"{nuovoStudente.Eta,-7}");
+                                Console.Write($"{nuovoStudente.Eta,-6}");
 
                                 Console.ForegroundColor = ConsoleColor.White;
                                 Console.Write($"{nuovoStudente.Email,-25} {nuovoStudente.Telefono,-13} ");
@@ -346,7 +346,7 @@ class Program
                                         Console.ForegroundColor = ConsoleColor.White;
                                         Console.Write($"{studenteModificato.Nome,-10} {studenteModificato.Cognome,-10} ");
                                         Console.ForegroundColor = ConsoleColor.Yellow;
-                                        Console.Write($"{studenteModificato.Eta,-7}");
+                                        Console.Write($"{studenteModificato.Eta,-6}");
                                         Console.ForegroundColor = ConsoleColor.White;
                                         Console.Write($"{studenteModificato.Email,-25} {studenteModificato.Telefono,-13} ");
                                         foreach (var interesse in studenteModificato.Interessi)
@@ -423,15 +423,23 @@ class Program
                                 Console.ForegroundColor = ConsoleColor.Yellow;
                                 Console.Write($"{studente.Id,-5} ");
                                 Console.ForegroundColor = ConsoleColor.White;
-                                Console.Write($"{studente.Nome,-14} {studente.Cognome,-14} ");
+                                Console.Write($"{studente.Nome,-10} {studente.Cognome,-10} ");
                                 Console.ForegroundColor = ConsoleColor.Yellow;
-                                Console.WriteLine($"{studente.Eta,-4}");
+                                Console.WriteLine($"{studente.Eta,-6}");
+                                Console.ForegroundColor = ConsoleColor.White;
+                                Console.Write($"{studente.Email,-25} {studente.Telefono,-13} ");
+                                foreach (var interesse in studente.Interessi)
+                                {
+                                    Console.ForegroundColor = ConsoleColor.Magenta;
+                                    Console.Write($"{interesse.NomeInteresse} ");
+                                }
+                                Console.WriteLine();
                                 Console.ResetColor();
                             }
 
                             Console.WriteLine();
                             Console.ForegroundColor = ConsoleColor.DarkBlue;
-                            Console.WriteLine(new string('─', 47));
+                            Console.WriteLine(new string('─', 96));
                             Console.WriteLine();
                             Console.ForegroundColor = ConsoleColor.Yellow;
                             Console.Write("Inserisci l'Id da Eliminare: ");
@@ -458,13 +466,22 @@ class Program
                                     Console.ForegroundColor = ConsoleColor.Yellow;
                                     Console.Write($"{studenteEsistente2.Id,-5} ");
                                     Console.ForegroundColor = ConsoleColor.White;
-                                    Console.Write($"{studenteEsistente2.Nome,-14} {studenteEsistente2.Cognome,-14} ");
+                                    Console.Write($"{studenteEsistente2.Nome,-10} {studenteEsistente2.Cognome,-10} ");
                                     Console.ForegroundColor = ConsoleColor.Yellow;
-                                    Console.WriteLine($"{studenteEsistente2.Eta,-4}");
+                                    Console.WriteLine($"{studenteEsistente2.Eta,-6}");
+                                    Console.ForegroundColor = ConsoleColor.White;
+                                    Console.Write($"{studenteEsistente2.Email,-25} {studenteEsistente2.Telefono,-13} ");
+                                    foreach (var interesse in studenteEsistente2.Interessi)
+                                    {
+                                        Console.ForegroundColor = ConsoleColor.Magenta;
+                                        Console.Write($"{interesse.NomeInteresse} ");
+                                    }
+                                    Console.WriteLine();
+                                    Console.ResetColor();
                                     Console.WriteLine();
 
                                     Console.ForegroundColor = ConsoleColor.DarkBlue;
-                                    Console.WriteLine(new string('─', 47));
+                                    Console.WriteLine(new string('─', 96));
                                     Console.WriteLine();
                                     Console.ForegroundColor = ConsoleColor.Green;
                                     Console.WriteLine("Vuoi davvero procedere?");
@@ -627,7 +644,7 @@ class Program
             Console.ForegroundColor = ConsoleColor.White;
             Console.Write($"{studenteEsistente.Nome,-10} {studenteEsistente.Cognome,-10} ");
             Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.Write($"{studenteEsistente.Eta,-7}");
+            Console.Write($"{studenteEsistente.Eta,-6}");
             Console.ForegroundColor = ConsoleColor.White;
             Console.Write($"{studenteEsistente.Email,-25} {studenteEsistente.Telefono,-13} ");
             foreach (var interesse in studenteEsistente.Interessi)
