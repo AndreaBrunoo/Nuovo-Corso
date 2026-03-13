@@ -1,24 +1,24 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using ArchetipoWebAPI.Models;
+using Rubrica.Api.Models;
 
-namespace ArchetipoWebAPI.Data;
+namespace Rubrica.Api.Data;
 
 public class ApplicationDbContext : IdentityUserContext<ApplicationUser>
 {
-    // costruttore che accetta le opzioni di configurazione di DbContext
-
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
     {
-
     }
-    // DbSet per la tabella Interessi
+
     public DbSet<Interest> Interests { get; set; }
 
+    // Configura le relazioni tra tabelle
     protected override void OnModelCreating(ModelBuilder builder)
     {
+        // Prima lasciamo a Identity configurare le sue tabelle standard
         base.OnModelCreating(builder);
 
+        // Configura il collegamento tra utente e interessi
         builder.Entity<Interest>()
             .HasOne(i => i.User)
             .WithMany(u => u.Interests)

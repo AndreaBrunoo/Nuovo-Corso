@@ -19,6 +19,7 @@
   <Project Path="MetodiConsole/MetodiConsole.csproj" />
   <Project Path="OperazioniSuFile/OperazioniSuFile.csproj" />
   <Project Path="Password/Password.csproj" />
+  <Project Path="Rubrica.Api/Rubrica.Api.csproj" />
   <Project Path="RubricaAvanzata/RubricaAvanzata.csproj" />
   <Project Path="RubricaConFunzioni/RubricaConFunzioni.csproj" />
   <Project Path="RubricaSemplice/RubricaSemplice.csproj" />
