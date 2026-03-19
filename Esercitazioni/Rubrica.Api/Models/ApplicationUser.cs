@@ -18,4 +18,10 @@ public class ApplicationUser : IdentityUser
 
     // Un utente può avere molti interessi
     public List<Interest> Interests { get; set; } = new List<Interest>();
+
+    public bool Preferiti { get; set; } = false;
+
+    public DateTime DataDiNascita { get; set; }
+
+    public int Eta { get; set; }
 }

@@ -50,6 +50,10 @@ public class AuthService
         user.NomeCompleto = dto.NomeCompleto;
         user.PhoneNumber = dto.PhoneNumber;
         user.CreatedAt = DateTime.UtcNow;
+        user.Preferiti = false;
+        user.DataDiNascita = dto.DataDiNascita;
+
+        user.Eta = TimeIntelligence.CalcolaEta(dto.DataDiNascita);
 
         // Identity salva l'utente e crea l'hash sicuro della password
         IdentityResult result = await _userManager.CreateAsync(user, dto.Password);
@@ -91,5 +95,77 @@ public class AuthService
 
         // Restituisco i dati del login
         return response;
+    }
+
+// Metodo per ottenere i dati di un utente tramite il suo ID
+public async Task<UserProfileDto?> GetUserByIdAsync(string userId) 
+    {
+        Console.WriteLine("Sono nella funzione GetUserByIdAsync");
+
+        // Cerchiamo l'utente tramite l'ID
+        ApplicationUser? user = await _userManager.FindByIdAsync(userId);
+
+        // Se l'utente non esiste, restituiamo null
+        if (user == null)
+        {
+            return null;
+        }
+
+        // Creiamo il DTO da restituire con i dati dell'utente
+        UserProfileDto dto = new UserProfileDto();
+        dto.UserId         = user.Id;
+        dto.NomeCompleto   = user.NomeCompleto;
+        dto.Email          = user.Email ?? string.Empty;
+        dto.PhoneNumber    = user.PhoneNumber;
+        dto.Preferiti      = user.Preferiti;
+        dto.DataDiNascita  = user.DataDiNascita;
+
+        // Restituiamo i dati del profilo
+        return dto;
+    }
+
+    // Metodo per aggiornare i dati di un utente
+    public async Task<IdentityResult> UpdateAsync(UpdateUserDto dto, string userId) 
+    {
+        // Cerchiamo l'utente tramite ID
+        ApplicationUser? user = await _userManager.FindByIdAsync(userId);
+        
+        // Se l'utente non esiste, restituiamo un errore
+        if (user == null)
+        {
+            IdentityError error = new IdentityError();
+            return IdentityResult.Failed(error);
+        }
+
+        // Aggiorniamo i campi modificabili
+        user.NomeCompleto     = dto.NomeCompleto;
+        user.PhoneNumber      = dto.PhoneNumber;
+        user.Preferiti        = dto.Preferiti;
+
+        // Salviamo le modifiche nel database
+        IdentityResult result = await _userManager.UpdateAsync(user); 
+
+        // Restituiamo il risultato dell'operazione
+        return result;
+    }
+
+    // Metodo per eliminare un utente tramite il suo ID
+    public async Task<IdentityResult> DeleteAsync(string userId) 
+    {
+        // Cerchiamo l'utente tramite ID
+        ApplicationUser? user = await _userManager.FindByIdAsync(userId);
+
+        // Se l'utente non esiste, restituiamo un errore
+        if (user == null)
+        {
+            IdentityError error = new IdentityError();
+            return IdentityResult.Failed(error);
+        }
+
+        // Eliminazione dell'utente dal database
+        IdentityResult result = await _userManager.DeleteAsync(user);
+
+        // Restituiamo il risultato dell'operazione
+        return result;
     }
 }

@@ -32,7 +32,9 @@ public static class DataSeeder
             "mario@email.com",
             "123456",
             "Mario Rossi",
-            "3331234567"
+            "3331234567",
+            new DateTime(1993/01/13),
+            false
         );
 
         ApplicationUser laura = await CreateUserIfNotExistsAsync
@@ -41,7 +43,9 @@ public static class DataSeeder
             "laura@email.com",
             "123456",
             "Laura Bianchi",
-            "3337654321"
+            "3337654321",
+            new DateTime(2000/04/23),
+            true
         );
 
         ApplicationUser giulia = await CreateUserIfNotExistsAsync
@@ -50,7 +54,9 @@ public static class DataSeeder
             "giulia@email.com",
             "123456",
             "Giulia Verdi",
-            "3331112222"
+            "3331112222",
+            new DateTime(2010/02/02),
+            true
         );
 
         // Creiamo alcuni interessi per ogni utente (solo se non esistono già)
@@ -74,7 +80,9 @@ public static class DataSeeder
         string email,
         string password,
         string nomeCompleto,
-        string? phoneNumber
+        string? phoneNumber,
+        DateTime dataDiNascita,
+        bool preferiti
     )
     {
         // Cerchiamo l'utente tramite email
@@ -93,6 +101,8 @@ public static class DataSeeder
         user.NomeCompleto = nomeCompleto;
         user.PhoneNumber = phoneNumber;
         user.CreatedAt = DateTime.UtcNow;
+        user.DataDiNascita = dataDiNascita;
+        user.Preferiti = preferiti;
 
         // Creiamo l'utente tramite Identity (gestisce hash password, validazioni, ecc.)
         IdentityResult result = await userManager.CreateAsync(user, password);
