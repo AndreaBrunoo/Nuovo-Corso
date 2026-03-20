@@ -44,12 +44,14 @@ Elimina interesse
 curl -X DELETE "http://localhost:5036/api/Interests"/11 \
 -H "Authorization: Bearer $TOKEN"
 ```
+
 Crea Utente
 ```bash
 curl -X POST "http://localhost:5036/api/Auth/register" \
 -H "Content-Type: application/json" \
--d '{"email":"luigi@email.com","password":"654321","nomeCompleto":"luigi bruno","phoneNumber":"3496266961","preferiti":true}'
+-d '{"email":"luigi@email.com","password":"654321","nomeCompleto":"luigi bruno","phoneNumber":"3496266961","dataDiNascita":"1998-03-05","preferiti":true}'
 ```
+
 Modifica utente(non implementato, ma si potrebbe fare aggiungendo un endpoint PUT in AuthController)
 ```bash
 curl -X PUT "http://localhost:5036/api/Auth/update" \
@@ -64,9 +66,9 @@ curl -X PUT "http://localhost:5036/api/Auth/update" \
 -H "Content-Type: application/json"  \
 -H "Authorization: Bearer $TOKEN" \
 -d '{"nomeCompleto":"luigi bruno","phoneNumber":"3496266961","preferiti":true}'
-Elimina utente(non implementato, ma si potrebbe fare aggiungendo un endpoint DELETE in AuthController)
 ```
 
+Elimina utente(non implementato, ma si potrebbe fare aggiungendo un endpoint DELETE in AuthController)
 ```bash
 curl -X DELETE "http://localhost:5036/api/Auth/delete" \
 -H "Authorization: Bearer $TOKEN"

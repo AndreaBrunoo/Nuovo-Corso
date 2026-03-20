@@ -25,6 +25,8 @@ public static class DataSeeder
         // Se il database non esiste, lo crea automaticamente
         await context.Database.EnsureCreatedAsync();
 
+        DateTime oggi = DateTime.Today;
+
         // Creiamo alcuni utenti demo (solo se non esistono già)
         ApplicationUser mario = await CreateUserIfNotExistsAsync
         (
@@ -33,7 +35,8 @@ public static class DataSeeder
             "123456",
             "Mario Rossi",
             "3331234567",
-            new DateTime(1993/01/13),
+            new DateTime(1993, 01, 13).Date,
+            oggi.Year - 1993,
             false
         );
 
@@ -44,7 +47,8 @@ public static class DataSeeder
             "123456",
             "Laura Bianchi",
             "3337654321",
-            new DateTime(2000/04/23),
+            new DateTime(2000, 04, 23).Date,
+            oggi.Year - 2000,
             true
         );
 
@@ -55,7 +59,8 @@ public static class DataSeeder
             "123456",
             "Giulia Verdi",
             "3331112222",
-            new DateTime(2010/02/02),
+            new DateTime(2010, 02, 02).Date,
+            oggi.Year - 2010,
             true
         );
 
@@ -82,7 +87,9 @@ public static class DataSeeder
         string nomeCompleto,
         string? phoneNumber,
         DateTime dataDiNascita,
-        bool preferiti
+        int eta,
+        bool preferiti     
+          
     )
     {
         // Cerchiamo l'utente tramite email
