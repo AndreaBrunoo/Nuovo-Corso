@@ -36,7 +36,7 @@ public static class DataSeeder
         int etaGiulia = oggi.Year - 2010;
 
         // Creiamo alcuni utenti demo (solo se non esistono già)
-        ApplicationUser mario = await EnsureUserExistsAsync
+        ApplicationUser admin = await EnsureUserExistsAsync
         (
             userManager,
             "mario@email.com",
@@ -48,7 +48,7 @@ public static class DataSeeder
             etaMario
         );
 
-        ApplicationUser laura = await EnsureUserExistsAsync
+        ApplicationUser editor = await EnsureUserExistsAsync
         (
             userManager,
             "laura@email.com",
@@ -60,7 +60,7 @@ public static class DataSeeder
             etaLaura
         );
 
-        ApplicationUser giulia = await EnsureUserExistsAsync
+        ApplicationUser normalUser = await EnsureUserExistsAsync
         (
             userManager,
             "giulia@email.com",
