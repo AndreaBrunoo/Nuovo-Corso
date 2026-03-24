@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Identity;
 using Rubrica.Api.Dtos;
+using Rubrica.Api.Data;
 using Rubrica.Api.Helpers;
 using Rubrica.Api.Models;
+using Microsoft.AspNetCore.Authorization.Infrastructure;
 
 namespace Rubrica.Api.Services;
 
@@ -21,9 +23,9 @@ public class AuthService
     public AuthService(
         UserManager<ApplicationUser> userManager,
         SignInManager<ApplicationUser> signInManager,
-        JwtHelper jwtHelper)
+        JwtHelper jwtHelper, ApplicationDbContext context)
     {
-        _userManager = userManager; 
+        _userManager = userManager; // Dependency injection
         _signInManager = signInManager; 
         _jwtHelper = jwtHelper; 
     }
@@ -40,7 +42,10 @@ public class AuthService
             IdentityError error = new IdentityError();
             error.Description = "Email già registrata.";
 
-            return IdentityResult.Failed(error);
+            List<IdentityError> errors = new List<IdentityError>();
+            errors.Add(error);
+
+            return IdentityResult.Failed(errors.ToArray());
         }
 
         // Creo un nuovo oggetto utente
@@ -48,17 +53,28 @@ public class AuthService
         user.UserName = dto.Email;
         user.Email = dto.Email;
         user.NomeCompleto = dto.NomeCompleto;
+        user.DataDiNascita = dto.DataDiNascita;
+        user.Eta = TimeIntelligence.CalcolaEta(dto.DataDiNascita);
         user.PhoneNumber = dto.PhoneNumber;
         user.CreatedAt = DateTime.UtcNow;
-        user.Preferiti = false;
-        user.DataDiNascita = dto.DataDiNascita;
-
-        user.Eta = TimeIntelligence.CalcolaEta(dto.DataDiNascita);
+        user.Preferiti = dto.Preferiti;
 
         // Identity salva l'utente e crea l'hash sicuro della password
         IdentityResult result = await _userManager.CreateAsync(user, dto.Password);
+        
+        if(!result.Succeeded)
+        {
+            // Restituisco il risultato (successo o errori)
+            return result;
+        }
 
-        // Restituisco il risultato (successo o errori)
+        IdentityResult addRoleResult = await _userManager.AddToRoleAsync(user,UserRoles.User);
+    
+        if(!addRoleResult.Succeeded)
+        {
+            return addRoleResult;
+        }
+
         return result;
     }
 
@@ -83,6 +99,7 @@ public class AuthService
             return null;
         }
 
+        IList<string> roles = await _userManager.GetRolesAsync(user);
         // Genero il token JWT per l'utente
         string token = _jwtHelper.GenerateToken(user);
 
@@ -92,6 +109,16 @@ public class AuthService
         response.UserId = user.Id;
         response.Email = user.Email ?? string.Empty;
         response.NomeCompleto = user.NomeCompleto;
+
+        // nel progetto scegliamo un solo ruolo "user" quindi se c'è almeno un ruolo restituiamo il primo
+        if(roles.Count > 0)
+        {
+            response.Role = roles[0];
+        }
+        else
+        {
+            response.Role = "";
+        }
 
         // Restituisco i dati del login
         return response;

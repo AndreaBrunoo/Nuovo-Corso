@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Rubrica.Api.Dtos;
 using Rubrica.Api.Services;
+using Rubrica.Api.Models;
 
 namespace Rubrica.Api.Controllers;
 
@@ -12,7 +13,6 @@ namespace Rubrica.Api.Controllers;
 public class InterestsController : ControllerBase
 {
     private readonly InterestService _interestService;
-
     public InterestsController(InterestService interestService)
     {
         _interestService = interestService;
@@ -27,7 +27,7 @@ public class InterestsController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(int id)
+    public async Task<IActionResult> GetUserById(int id)
     {
         string userId = GetUserIdFromToken();
         InterestDto? interest = await _interestService.GetByIdAsync(id, userId);
@@ -41,6 +41,7 @@ public class InterestsController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = UserRoles.AdminOrEditor)]
     public async Task<IActionResult> Create([FromBody] InterestCreateDto dto)
     {
         string userId = GetUserIdFromToken();
@@ -51,10 +52,11 @@ public class InterestsController : ControllerBase
             return BadRequest(new { message = "Interesse già presente oppure non valido." });
         }
 
-        return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
+        return CreatedAtAction(nameof(GetUserById), new { id = result.Id }, result);
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = UserRoles.AdminOrEditor)]
     public async Task<IActionResult> Update(int id, [FromBody] InterestCreateDto dto)
     {
         string userId = GetUserIdFromToken();
@@ -69,6 +71,7 @@ public class InterestsController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = UserRoles.AdminOrEditor)]
     public async Task<IActionResult> Delete(int id)
     {
         string userId = GetUserIdFromToken();

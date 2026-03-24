@@ -21,14 +21,22 @@ public static class DataSeeder
 
         // Recuperiamo anche il gestore utenti di Identity
         UserManager<ApplicationUser> userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+        RoleManager<IdentityRole> roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+        
+        await EnsureRoleExistsAsync(roleManager, UserRoles.Admin);
+        await EnsureRoleExistsAsync(roleManager, UserRoles.Editor);
+        await EnsureRoleExistsAsync(roleManager, UserRoles.User);
 
         // Se il database non esiste, lo crea automaticamente
-        await context.Database.EnsureCreatedAsync();
+        /////////// await context.Database.EnsureCreatedAsync();
 
         DateTime oggi = DateTime.Today;
+        int etaMario = oggi.Year - 1993;
+        int etaLaura = oggi.Year - 2000;
+        int etaGiulia = oggi.Year - 2010;
 
         // Creiamo alcuni utenti demo (solo se non esistono già)
-        ApplicationUser mario = await CreateUserIfNotExistsAsync
+        ApplicationUser mario = await EnsureUserExistsAsync
         (
             userManager,
             "mario@email.com",
@@ -36,11 +44,11 @@ public static class DataSeeder
             "Mario Rossi",
             "3331234567",
             new DateTime(1993, 01, 13).Date,
-            oggi.Year - 1993,
-            false
+            false,
+            etaMario
         );
 
-        ApplicationUser laura = await CreateUserIfNotExistsAsync
+        ApplicationUser laura = await EnsureUserExistsAsync
         (
             userManager,
             "laura@email.com",
@@ -48,11 +56,11 @@ public static class DataSeeder
             "Laura Bianchi",
             "3337654321",
             new DateTime(2000, 04, 23).Date,
-            oggi.Year - 2000,
-            true
+            true,
+            etaLaura
         );
 
-        ApplicationUser giulia = await CreateUserIfNotExistsAsync
+        ApplicationUser giulia = await EnsureUserExistsAsync
         (
             userManager,
             "giulia@email.com",
@@ -60,49 +68,60 @@ public static class DataSeeder
             "Giulia Verdi",
             "3331112222",
             new DateTime(2010, 02, 02).Date,
-            oggi.Year - 2010,
-            true
+            true,
+            etaGiulia
         );
 
+        await EnsureSingleRoleAsync(userManager, admin, UserRoles.Admin);
+        await EnsureSingleRoleAsync(userManager, editor, UserRoles.Editor);
+        await EnsureSingleRoleAsync(userManager, normalUser, UserRoles.User);
+
         // Creiamo alcuni interessi per ogni utente (solo se non esistono già)
-        await CreateInterestIfNotExistsAsync(context, mario.Id, "Calcio");
-        await CreateInterestIfNotExistsAsync(context, mario.Id, "CSharp");
-        await CreateInterestIfNotExistsAsync(context, mario.Id, "Cinema");
+        await EnsureInterestExistsAsync(context, admin.Id,  "Calcio");
+        await EnsureInterestExistsAsync(context, admin.Id,  "CSharp");
+        await EnsureInterestExistsAsync(context, admin.Id,  "Cinema");
 
-        await CreateInterestIfNotExistsAsync(context, laura.Id, "Nuoto");
-        await CreateInterestIfNotExistsAsync(context, laura.Id, "Angular");
-        await CreateInterestIfNotExistsAsync(context, laura.Id, "Musica");
+        await EnsureInterestExistsAsync(context, editor.Id, "Nuoto");
+        await EnsureInterestExistsAsync(context, editor.Id, "Angular");
+        await EnsureInterestExistsAsync(context, editor.Id, "Musica");
 
-        await CreateInterestIfNotExistsAsync(context, giulia.Id, "Lettura");
-        await CreateInterestIfNotExistsAsync(context, giulia.Id, "Viaggi");
-        await CreateInterestIfNotExistsAsync(context, giulia.Id, "Fotografia");
+        await EnsureInterestExistsAsync(context, normalUser.Id, "Lettura");
+        await EnsureInterestExistsAsync(context, normalUser.Id, "Viaggi");
+        await EnsureInterestExistsAsync(context, normalUser.Id, "Fotografia");
     }
 
-    // Metodo che crea un utente solo se non esiste già
-    private static async Task<ApplicationUser> CreateUserIfNotExistsAsync
-    (
-        UserManager<ApplicationUser> userManager,
+    private static async Task EnsureRoleExistsAsync(RoleManager<IdentityRole> roleManager, string roleName)
+  {
+    bool exists = await roleManager.RoleExistsAsync(roleName);
+    if (!exists)
+    {
+      IdentityRole role = new IdentityRole();
+      role.Name = roleName;
+
+      await roleManager.CreateAsync(role);
+    }
+  }
+
+  private static async Task<ApplicationUser> EnsureUserExistsAsync(
+      UserManager<ApplicationUser> userManager,
         string email,
         string password,
         string nomeCompleto,
         string? phoneNumber,
         DateTime dataDiNascita,
-        int eta,
-        bool preferiti     
-          
-    )
+        bool preferiti,     
+        int eta
+  )
+  {
+    // controlliamo se l'utente esiste già tramite email
+    ApplicationUser? existingUser = await userManager.FindByEmailAsync(email);
+
+    if (existingUser != null)
     {
-        // Cerchiamo l'utente tramite email
-        ApplicationUser? existingUser = await userManager.FindByEmailAsync(email);
+      return existingUser;
+    }
 
-        // Se esiste già, lo restituiamo e non facciamo nulla
-        if (existingUser != null)
-        {
-            return existingUser;
-        }
-
-        // Creiamo un nuovo utente
-        ApplicationUser user = new ApplicationUser();
+    ApplicationUser user = new ApplicationUser();
         user.UserName = email;
         user.Email = email;
         user.NomeCompleto = nomeCompleto;
@@ -110,58 +129,79 @@ public static class DataSeeder
         user.CreatedAt = DateTime.UtcNow;
         user.DataDiNascita = dataDiNascita;
         user.Preferiti = preferiti;
+        user.Eta = eta;
 
-        // Creiamo l'utente tramite Identity (gestisce hash password, validazioni, ecc.)
-        IdentityResult result = await userManager.CreateAsync(user, password);
 
-        // Se ci sono errori, li raccogliamo e lanciamo un'eccezione
-        if (!result.Succeeded)
-        {
-            List<string> errors = new List<string>();
 
-            foreach (IdentityError error in result.Errors)
-            {
-                errors.Add(error.Description);
-            }
+    IdentityResult result = await userManager.CreateAsync(user, password);
 
-            string message = string.Join(" | ", errors);
-            throw new Exception($"Errore durante la creazione dell'utente {email}: {message}");
-        }
-
-        return user;
-    }
-
-    // Metodo che crea un interesse solo se non esiste già per quell'utente
-    private static async Task CreateInterestIfNotExistsAsync(
-        ApplicationDbContext context,
-        string userId,
-        string nome)
+    if (!result.Succeeded)
     {
-        // Leggiamo tutti gli interessi dal database
-        List<Interest> interests = await context.Interests.ToListAsync();
+      List<string> errors = new List<string>();
 
-        // Controlliamo se esiste già un interesse con lo stesso nome per lo stesso utente
-        for (int i = 0; i < interests.Count; i++)
-        {
-            Interest currentInterest = interests[i];
-
-            bool sameUser = currentInterest.UserId == userId;
-            bool sameName = string.Equals(currentInterest.Nome, nome, StringComparison.OrdinalIgnoreCase);
-
-            // Se esiste già, non facciamo nulla
-            if (sameUser && sameName)
-            {
-                return;
-            }
-        }
-
-        // Creiamo un nuovo interesse
-        Interest interest = new Interest();
-        interest.UserId = userId;
-        interest.Nome = nome;
-
-        // Lo aggiungiamo al database
-        context.Interests.Add(interest);
-        await context.SaveChangesAsync();
+      foreach (IdentityError error in result.Errors)
+      {
+        errors.Add(error.Description);
+      }
+      string message = string.Join("|", errors);
+      throw new Exception($"Errore durante il seed dell'utente {email} : {message}");
     }
+    return user;
+  }
+
+  private static async Task EnsureSingleRoleAsync(UserManager<ApplicationUser> userManager, ApplicationUser user, string targetRole)
+  {
+    IList<string> currentRoles = await userManager.GetRolesAsync(user);
+    // rimuoviamo i ruoli classici se diversi da quello target
+
+    for (int i = 0; i < currentRoles.Count; i++)
+    {
+      string currentRole = currentRoles[i];
+
+      if (currentRole == UserRoles.Admin || currentRole == UserRoles.Editor || currentRole == UserRoles.User)
+      {
+        await userManager.RemoveFromRoleAsync(user, currentRole);
+      }
+    }
+    bool alreadyInTargetRole = await userManager.IsInRoleAsync(user, targetRole);
+
+    if (!alreadyInTargetRole)
+    {
+      await userManager.AddToRoleAsync(user, targetRole);
+    }
+
+  }
+
+
+  private static async Task EnsureInterestExistsAsync(
+   ApplicationDbContext context,
+   string userId,
+   string nome)
+  {
+    //leggiamo tutti gli interessi e controlliamo a mano
+    // see questo interesse esiste già per quell'utente.
+
+    List<Interest> interests = await context.Interests.ToListAsync();
+
+    for (int i = 0; i < interests.Count; i++)
+    {
+      Interest currentInterest = interests[i];
+
+      bool sameUser = currentInterest.UserId == userId;
+      bool sameName = string.Equals(currentInterest.Nome, nome, StringComparison.OrdinalIgnoreCase);
+
+      if (sameUser && sameName)
+      {
+        return;
+      }
+    }
+
+    Interest interest = new Interest();
+    interest.UserId = userId;
+    interest.Nome = nome;
+
+    context.Interests.Add(interest);
+    await context.SaveChangesAsync();
+  }
+
 }

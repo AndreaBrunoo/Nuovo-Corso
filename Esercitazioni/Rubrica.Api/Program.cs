@@ -90,6 +90,13 @@ app.MapControllers();
 
 // Richiama il seed iniziale con alcuni utenti demo e i loro interessi.
 // Se i dati esistono già, non vengono duplicati.
+
+using(var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    await db.Database.MigrateAsync();
+}
+
 await DataSeeder.SeedAsync(app.Services);
 
 app.Run();

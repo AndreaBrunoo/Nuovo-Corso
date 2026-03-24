@@ -1,13 +1,16 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.IdentityModel.Tokens;
 using Rubrica.Api.Models;
 
 namespace Rubrica.Api.Helpers;
 
+// si occupa di generare i token jwt per gli utenti autenticati.
 public class JwtHelper
 {
+     // leggere e gestire i valori di configurazione dell'applicazione.
     private readonly IConfiguration _configuration;
 
     public JwtHelper(IConfiguration configuration)
@@ -16,7 +19,7 @@ public class JwtHelper
         _configuration = configuration;
     }
 
-    public string GenerateToken(ApplicationUser user)
+    public string GenerateToken(ApplicationUser user, IList<string> roles)
     {
         // Leggiamo i valori dal file appsettings.json
         // Sono necessari per creare il token
@@ -32,12 +35,14 @@ public class JwtHelper
 
         // Dentro il token mettiamo alcune informazioni sull'utente
         // Queste informazioni si chiamano "claims"
-        Claim[] claims = new Claim[]
+        List<Claim> claims = new List<Claim>();
+            claims.Add(new Claim (ClaimTypes.NameIdentifier, user.Id));          // Id dell'utente
+            claims.Add(new Claim (ClaimTypes.Name, user.UserName ?? ""));        // Username
+            claims.Add(new Claim (ClaimTypes.Email, user.Email ?? ""));           // Email
+        for(int i = 0; i < roles.Count; i++)
         {
-            new Claim(ClaimTypes.NameIdentifier, user.Id),          // Id dell'utente
-            new Claim(ClaimTypes.Name, user.UserName ?? ""),        // Username
-            new Claim(ClaimTypes.Email, user.Email ?? "")           // Email
-        };
+            claims.Add(new Claim(ClaimTypes.Role, roles[i] ));
+        }
 
         // Convertiamo la chiave segreta in byte
         SymmetricSecurityKey securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
