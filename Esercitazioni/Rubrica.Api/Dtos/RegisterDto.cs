@@ -22,3 +22,4 @@ public class RegisterDto
 
     public bool Preferiti { get; set; } = false;
 }
+

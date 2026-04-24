@@ -101,7 +101,7 @@ public class AuthService
 
         IList<string> roles = await _userManager.GetRolesAsync(user);
         // Genero il token JWT per l'utente
-        string token = _jwtHelper.GenerateToken(user);
+        string token = _jwtHelper.GenerateToken(user, roles);
 
         // creo la risposta 
         AuthResponseDto response = new AuthResponseDto();
