@@ -1,26 +1,27 @@
 import { Component, inject, signal } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { HttpErrorResponse } from '@angular/common/http';
-import { Auth } from '../../services/auth.service';
+import { AuthService } from '../../services/auth.service';
 import { InterestService } from '../../services/interest.service';
-import { Interest } from '../../models/interest.model';
+import { Interest } from '../../Models/Interest.model';
 
 @Component({
-  selector: 'app-dashboard-page',
+  selector: 'app-interests',
   standalone: true,
   imports: [ReactiveFormsModule],
   templateUrl: './interests.page.html',
+  styleUrl: './interests.page.css'
 })
 export class InterestsPage {
+
   private readonly fb = inject(FormBuilder);
-  private readonly authService = inject(Auth);
+  private readonly authService = inject(AuthService);
   private readonly interestService = inject(InterestService);
 
   readonly interests = signal<Interest[]>([]);
   readonly isLoading = signal(false);
   readonly isSubmitting = signal(false);
   readonly errorMessage = signal('');
-  readonly succesMessage = signal('');
+  readonly successMessage = signal('');
   readonly editingId = signal<number | null>(null);
 
   readonly form = this.fb.nonNullable.group({
@@ -39,97 +40,107 @@ export class InterestsPage {
     this.isLoading.set(true);
     this.errorMessage.set('');
 
-    this.interestService, getAll().subscribe({
+    this.interestService.getAll().subscribe({
       next: (items) => {
         this.interests.set(items);
         this.isLoading.set(false);
       },
       error: (error: unknown) => {
         this.isLoading.set(false);
-        this.errorMessage.set(this.extractErrorMessage(error, 'Impossibile caricare gli interessi'));
+        this.errorMessage.set(
+          this.extractErrorMessage(error, 'Impossibile caricare gli interessi')
+        );
       }
     });
   }
 
   submit(): void {
     if (this.form.invalid || !this.canEdit()) {
-      this.form.markAllAsTouched()
+      this.form.markAllAsTouched();
       return;
     }
 
     this.isSubmitting.set(true);
     this.errorMessage.set('');
-    this.succesMessage.set('');
+    this.successMessage.set('');
+
+    const formValue = this.form.getRawValue();
 
     const request$ = this.editingId()
-      ? this.interestService.update(this.editingId()!, this.form.getRawValue())
-      : this.interestService.create(this.form.getRawValue());
+      ? this.interestService.update(this.editingId()!, formValue)
+      : this.interestService.create(formValue);
 
     request$.subscribe({
       next: () => {
         this.isSubmitting.set(false);
-        this.succesMessage.set(this.editingId() ? 'Interesse aggiornato.' : 'Interesse creato.');
+        this.successMessage.set(
+          this.editingId() ? 'Interesse aggiornato' : 'Interesse creato'
+        );
         this.resetForm();
         this.loadInterests();
       },
       error: (error: unknown) => {
         this.isSubmitting.set(false);
-        this.errorMessage.set(this.extractErrorMessage(error, 'Operazione non riuscita.'));
+        this.errorMessage.set(
+          this.extractErrorMessage(error, 'Operazione non riuscita.')
+        );
       }
     });
   }
 
   startEdit(item: Interest): void {
-    if (!this.canEdit()) {
-      return;
-    }
+    if (!this.canEdit()) return;
 
     this.editingId.set(item.id);
-    this.form.patchValue({ nome: item.nome });
-    this.succesMessage.set('');
+    this.form.patchValue({
+      nome: item.nome
+    })
+    this.successMessage.set('');
     this.errorMessage.set('');
   }
 
   delete(item: Interest): void {
-    if (this.canEdit()) {
+    if (!this.canEdit()) {
       return;
     }
 
-    const confirmed = confirm(`Eliminare l'interesse \"${item.nome}\"?`);
+    const confirmed = confirm(`Eliminare l'interesse \"${item.nome}\"?`)
 
     if (!confirmed) {
       return;
     }
 
     this.errorMessage.set('');
-    this.succesMessage.set('');
+    this.successMessage.set('');
 
     this.interestService.delete(item.id).subscribe({
       next: () => {
-        this.succesMessage.set('Interesse eliminato.');
+        this.successMessage.set('Interesse eliminato');
         if (this.editingId() === item.id) {
           this.resetForm();
         }
+
         this.loadInterests();
       },
       error: (error: unknown) => {
         this.errorMessage.set(this.extractErrorMessage(error, 'Eliminazione non riuscita'));
+
       }
     });
   }
 
   resetForm(): void {
-    this.editingId.set(null);
     this.form.reset({ nome: '' });
+    this.editingId.set(null);
   }
 
-  trackId(_: number, item: Interest): number {
-    return item.id;
+  trackById(_: number, item: Interest): number {
+    return item.id
   }
 
   private extractErrorMessage(error: unknown, fallback: string): string {
-    if (error instanceof HttpErrorResponse) {
-      return error.error?.message ?? fallback;
+    if (error instanceof Error) {
+      return error?.message ?? fallback;
     }
     return fallback
   }

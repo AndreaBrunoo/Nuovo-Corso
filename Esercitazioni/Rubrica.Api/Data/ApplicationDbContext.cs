@@ -5,13 +5,28 @@ using Rubrica.Api.Models;
 
 namespace Rubrica.Api.Data;
 
-public class ApplicationDbContext : IdentityDbContext<ApplicationUser,IdentityRole, string>
+// definizione del contesto del database, i due punti indicano l'ereditarietà ovvero ApplicationDbContext che eredità tutto ciò che fa IdentityUserContext
+
+
+
+public class ApplicationDbContext : IdentityDbContext<ApplicationUser,IdentityRole,string>
 {
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
+    /* Questo DbContext ora gestisce:
+    - utenti
+    - ruoli
+    - user-roles
+    - claims, logins, tokens di Identity
+    - la nostra tabella custom Interests 
+    */
+
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext>options) : base(options)
     {
+     
     }
 
-    public DbSet<Interest> Interests { get; set; }
+    public DbSet<Interest> Interests {get;set;}
+    public DbSet<ApplicationUser> Users {get;set;}
+
 
     // Configura le relazioni tra tabelle
     protected override void OnModelCreating(ModelBuilder builder)

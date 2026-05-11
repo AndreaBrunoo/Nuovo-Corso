@@ -1,0 +1,38 @@
+<section>
+    <h1 class="page-title">Lista utenti</h1>
+    <p class="page-subtitle">
+        Visualizzazione di tutti gli utenti registrati
+    </p>
+
+    <div class="grid">
+        <article class="card">
+
+            @if(users().length === 0){
+                <p>Nessun utente trovato.</p>
+            } @else {
+
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Email</th>
+                            <th>Nome completo</th>
+                            <th>Telefono</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @for(user of users(); track user.id){
+                            <tr>
+                                <td>{{ user.email }}</td>
+                                <td>{{ user.nomeCompleto }}</td>
+                                <td>{{ user.phoneNumber || 'N/A' }}</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+            }
+
+        </article>
+    </div>
+</section>

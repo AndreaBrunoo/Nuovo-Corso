@@ -4,23 +4,24 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { AdminUsersService } from '../../services/admin-users.service';
 
 @Component({
-  selector: 'app-admin-change-role-page',
+  selector: 'app-admin-change-role',
   standalone: true,
   imports: [ReactiveFormsModule],
-  templateUrl: './admin-change-role.page.html',
+  templateUrl: './admin-change-role.page.html'
 })
 export class AdminChangeRolePage {
+
   private readonly fb = inject(FormBuilder);
-  private readonly adminUsers = inject(AdminUsersService);
+  private readonly adminUsersService = inject(AdminUsersService);
 
   readonly isSubmitting = signal(false);
-  readonly succesMessage = signal('');
-  readonly errormessage = signal('');
+  readonly successMessage = signal('');
+  readonly errorMessage = signal('');
   readonly roles = ['Admin', 'Editor', 'User'];
 
   readonly form = this.fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
-    newrole: ['User', [Validators.required]]
+    newRole: ['User', [Validators.required]]
   });
 
   submit(): void {
@@ -30,26 +31,28 @@ export class AdminChangeRolePage {
     }
 
     this.isSubmitting.set(true);
-    this.succesMessage.set('');
-    this.errormessage.set('');
+    this.successMessage.set('');
+    this.errorMessage.set('');
 
-    this.adminUsers.changeRole(this.form.getRawValue()).subscribe({
+    this.adminUsersService.changeRole(this.form.getRawValue()).subscribe({
       next: (response) => {
         this.isSubmitting.set(false);
-        this.succesMessage.set(`${response.message} Nuovo Ruolo: ${response.role}`);
+        this.successMessage.set(`${response.message} Nuovo Ruolo:${response.role}`)
+        console.log(response);
       },
-      error: (error: unknown) => {
+      error: (error: unknown) =>{
         this.isSubmitting.set(false);
-        this.errormessage.set(this.extractErrorMessage(error));
+        this.errorMessage.set(this.extractErrorMessage(error));
       }
     });
   }
 
-  private extractErrorMessage(error: unknown): string {
-    if (error instanceof HttpErrorResponse) {
-      return error.error?.message ?? 'Cambio ruolo non riuscito.';
+  private extractErrorMessage(error:unknown):string{
+    if(error instanceof HttpErrorResponse)
+    {
+      return error.error?.message?? 'Cambio ruolo non riuscito';
     }
 
-    return 'Cambio ruolo non riuscito'
+    return 'Cambio ruolo non riuscito';
   }
 }

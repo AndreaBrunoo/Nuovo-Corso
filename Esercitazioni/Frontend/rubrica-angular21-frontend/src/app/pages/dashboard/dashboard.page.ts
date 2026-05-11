@@ -1,23 +1,23 @@
 import { Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { Auth } from '../../services/auth.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
-  selector: 'app-dashboard-page',
+  selector: 'app-dashboard',
   standalone: true,
   imports: [RouterLink],
-  templateUrl: './dashboard.page.html',
+  templateUrl: './dashboard.page.html'
 })
 export class DashboardPage {
-  private readonly authService = inject(Auth);
+  private readonly authService = inject(AuthService);
 
   readonly user = this.authService.currentUser;
 
-  canEditInterests(): boolean {
+  canEditInterests(): boolean{
     return this.authService.hasAnyRole(['Admin', 'Editor']);
   }
 
-  isAdmin(): boolean {
+  isAdmin(): boolean{
     return this.authService.hasRole('Admin');
   }
 }

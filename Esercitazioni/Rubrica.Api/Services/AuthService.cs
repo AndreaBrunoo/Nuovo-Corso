@@ -3,42 +3,42 @@ using Rubrica.Api.Dtos;
 using Rubrica.Api.Data;
 using Rubrica.Api.Helpers;
 using Rubrica.Api.Models;
-using Microsoft.AspNetCore.Authorization.Infrastructure;
+using Microsoft.EntityFrameworkCore;
 
 namespace Rubrica.Api.Services;
 
-// Questo servizio gestisce la registrazione e il login degli utenti
+// Questa classe si occupa della logica di business per la registrazione e il login.
+
+
+// Questa classe si occupa della logica di business per la registrazione e il login.
 public class AuthService
 {
-    // UserManager gestisce la creazione e gestione degli utenti
-    private readonly UserManager<ApplicationUser> _userManager;
-    
-    // SignInManager controlla la password e gestisce il login
-    private readonly SignInManager<ApplicationUser> _signInManager;
+    private readonly UserManager<ApplicationUser> _userManager; // si occupa di creazione e gestione degli utenti.
+    private readonly SignInManager<ApplicationUser> _signInManager; // si occupa della registrazione degli utenti
+    private readonly ApplicationDbContext _context; // rimando all'helper per la generazione di un token JWT.
 
-    // JwtHelper serve per creare il token JWT dopo il login
-    private readonly JwtHelper _jwtHelper;
+    private readonly JwtHelper _jwtHelper; // rimando all'helper per la generazione di un token JWT.
 
-    // Il costruttore riceve i servizi necessari tramite Dependency Injection
     public AuthService(
         UserManager<ApplicationUser> userManager,
         SignInManager<ApplicationUser> signInManager,
         JwtHelper jwtHelper, ApplicationDbContext context)
     {
-        _userManager = userManager; // Dependency injection
-        _signInManager = signInManager; 
-        _jwtHelper = jwtHelper; 
+        _userManager = userManager;  // Dependency injection
+        _signInManager = signInManager;
+        _jwtHelper = jwtHelper;
+        _context = context;
+
     }
 
-    // Metodo per registrare un nuovo utente
-    public async Task<IdentityResult> RegisterAsync(RegisterDto dto)
+    public async Task<IdentityResult> RegisterAsync(RegisterDto dto) // Task è una classe di sistema per le operazioni asincrone( non bloccano il thread principale) che accetta un tipo, in questo caso la classe IdentityResult.
     {
         // Cerchiamo se la mail esiste già
         ApplicationUser? existingUser = await _userManager.FindByEmailAsync(dto.Email);
 
-        // Se esiste, restituisco un errore
         if (existingUser != null)
         {
+            // qui gestiamo l'errore nel caso in cui si inserisca una mail già registrata.
             IdentityError error = new IdentityError();
             error.Description = "Email già registrata.";
 
@@ -48,29 +48,26 @@ public class AuthService
             return IdentityResult.Failed(errors.ToArray());
         }
 
-        // Creo un nuovo oggetto utente
+        // Creiamo l'utente nuovo se la mail non è presente istanziando un oggetto del modello ApplicationUser e assegnando alle sue proprietà ciò che vogliamo mostrare attraverso i DTO.
         ApplicationUser user = new ApplicationUser();
         user.UserName = dto.Email;
         user.Email = dto.Email;
         user.NomeCompleto = dto.NomeCompleto;
-        user.DataDiNascita = dto.DataDiNascita;
-        user.Eta = TimeIntelligence.CalcolaEta(dto.DataDiNascita);
         user.PhoneNumber = dto.PhoneNumber;
         user.CreatedAt = DateTime.UtcNow;
         user.Preferiti = dto.Preferiti;
 
         // Identity salva l'utente e crea l'hash sicuro della password
         IdentityResult result = await _userManager.CreateAsync(user, dto.Password);
-        
-        if(!result.Succeeded)
+
+        if (!result.Succeeded)
         {
-            // Restituisco il risultato (successo o errori)
             return result;
         }
 
-        IdentityResult addRoleResult = await _userManager.AddToRoleAsync(user,UserRoles.User);
-    
-        if(!addRoleResult.Succeeded)
+        IdentityResult addRoleResult = await _userManager.AddToRoleAsync(user, UserRoles.User);
+
+        if (!addRoleResult.Succeeded)
         {
             return addRoleResult;
         }
@@ -78,13 +75,11 @@ public class AuthService
         return result;
     }
 
-    // Metodo per effettuare il login
     public async Task<AuthResponseDto?> LoginAsync(LoginDto dto)
     {
         // Cerchiamo l'utente con la mail
         ApplicationUser? user = await _userManager.FindByEmailAsync(dto.Email);
 
-        // Se non esiste, login fallito
         if (user == null)
         {
             return null;
@@ -93,25 +88,23 @@ public class AuthService
         // Controlliamo se la password è corretta
         SignInResult result = await _signInManager.CheckPasswordSignInAsync(user, dto.Password, false);
 
-        // Se la password è sbagliata, login fallito
         if (!result.Succeeded)
         {
             return null;
         }
-
         IList<string> roles = await _userManager.GetRolesAsync(user);
-        // Genero il token JWT per l'utente
+        // Nel caso in cui la password sia corretta chiamiamo il metodo per la generazione del token e costruiamo il Dto per la risposta
         string token = _jwtHelper.GenerateToken(user, roles);
 
-        // creo la risposta 
         AuthResponseDto response = new AuthResponseDto();
         response.Token = token;
         response.UserId = user.Id;
         response.Email = user.Email ?? string.Empty;
         response.NomeCompleto = user.NomeCompleto;
+        response.Preferiti = user.Preferiti;
 
         // nel progetto scegliamo un solo ruolo "user" quindi se c'è almeno un ruolo restituiamo il primo
-        if(roles.Count > 0)
+        if (roles.Count > 0)
         {
             response.Role = roles[0];
         }
@@ -120,79 +113,81 @@ public class AuthService
             response.Role = "";
         }
 
-        // Restituisco i dati del login
         return response;
     }
-
-// Metodo per ottenere i dati di un utente tramite il suo ID
-public async Task<UserProfileDto?> GetUserByIdAsync(string userId) 
+    public async Task<List<UserProfileDto>> GetAllUsersAsync()
     {
-        Console.WriteLine("Sono nella funzione GetUserByIdAsync");
+        List<ApplicationUser> users = await _context.Users.ToListAsync();
 
-        // Cerchiamo l'utente tramite l'ID
+        List<UserProfileDto> result = new List<UserProfileDto>();
+
+        for (int i = 0; i < users.Count; i++)
+        {
+            ApplicationUser currentUser = users[i];
+
+            UserProfileDto dto = new UserProfileDto();
+            dto.UserId = currentUser.Id;
+            dto.Email = currentUser?.Email ?? "";
+            dto.NomeCompleto = currentUser?.NomeCompleto ?? "";
+            dto.PhoneNumber = currentUser?.PhoneNumber ?? "";
+
+            result.Add(dto);
+        }
+
+        return result;
+    }
+    public async Task<UserProfileDto?> GetUserByIdAsync(string userId) // metodo asincrono per ottenere un utente.
+    {
         ApplicationUser? user = await _userManager.FindByIdAsync(userId);
 
-        // Se l'utente non esiste, restituiamo null
         if (user == null)
         {
             return null;
         }
 
-        // Creiamo il DTO da restituire con i dati dell'utente
         UserProfileDto dto = new UserProfileDto();
-        dto.UserId         = user.Id;
-        dto.NomeCompleto   = user.NomeCompleto;
-        dto.Email          = user.Email ?? string.Empty;
-        dto.PhoneNumber    = user.PhoneNumber;
-        dto.Preferiti      = user.Preferiti;
-        dto.DataDiNascita  = user.DataDiNascita;
+        dto.UserId = user.Id;
+        dto.NomeCompleto = user.NomeCompleto;
+        dto.Email = user.Email ?? string.Empty;
+        dto.PhoneNumber = user.PhoneNumber;
+        dto.Preferiti = user.Preferiti;
 
-        // Restituiamo i dati del profilo
         return dto;
     }
 
-    // Metodo per aggiornare i dati di un utente
-    public async Task<IdentityResult> UpdateAsync(UpdateUserDto dto, string userId) 
+    public async Task<IdentityResult> UpdateAsync(UpdateUserDto dto, string userId) // metodo per la modifica di un utente
     {
-        // Cerchiamo l'utente tramite ID
+
         ApplicationUser? user = await _userManager.FindByIdAsync(userId);
-        
-        // Se l'utente non esiste, restituiamo un errore
+
         if (user == null)
         {
             IdentityError error = new IdentityError();
             return IdentityResult.Failed(error);
         }
 
-        // Aggiorniamo i campi modificabili
-        user.NomeCompleto     = dto.NomeCompleto;
-        user.PhoneNumber      = dto.PhoneNumber;
-        user.Preferiti        = dto.Preferiti;
 
-        // Salviamo le modifiche nel database
-        IdentityResult result = await _userManager.UpdateAsync(user); 
+        user.NomeCompleto = dto.NomeCompleto;
+        user.PhoneNumber = dto.PhoneNumber;
+        user.Preferiti = dto.Preferiti;
+        IdentityResult result = await _userManager.UpdateAsync(user); // salva le modifiche apportate al database.
 
-        // Restituiamo il risultato dell'operazione
+
         return result;
     }
 
-    // Metodo per eliminare un utente tramite il suo ID
-    public async Task<IdentityResult> DeleteAsync(string userId) 
+    public async Task<IdentityResult> DeleteAsync(string userId) // metodo per la cancellazione di un interesse.
     {
-        // Cerchiamo l'utente tramite ID
         ApplicationUser? user = await _userManager.FindByIdAsync(userId);
 
-        // Se l'utente non esiste, restituiamo un errore
         if (user == null)
         {
             IdentityError error = new IdentityError();
             return IdentityResult.Failed(error);
         }
 
-        // Eliminazione dell'utente dal database
         IdentityResult result = await _userManager.DeleteAsync(user);
 
-        // Restituiamo il risultato dell'operazione
         return result;
     }
 }

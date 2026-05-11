@@ -2,29 +2,30 @@ import { Component, inject, signal } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Auth } from '../../services/auth.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
-  selector: 'app-register-page',
+  selector: 'app-register',
   standalone: true,
   imports: [ReactiveFormsModule, RouterLink],
-  templateUrl: './register.page.html',
+  templateUrl: './register.page.html'
 })
 export class RegisterPage {
   private readonly fb = inject(FormBuilder);
-  private readonly authService = inject(Auth);
+  private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
 
   readonly isLoading = signal(false);
-  readonly succesMessage = signal('');
-  readonly errormessage = signal('');
-  
+  readonly successMessage = signal('');
+  readonly errorMessage = signal('');
+
+
   readonly form = this.fb.group({
     email: this.fb.nonNullable.control('', [Validators.required, Validators.email]),
     password: this.fb.nonNullable.control('', [Validators.required, Validators.minLength(6)]),
     nomeCompleto: this.fb.nonNullable.control('', [Validators.required, Validators.maxLength(100)]),
     phoneNumber: this.fb.control<string | null>('')
-  });
+  })
 
   submit(): void {
     if (this.form.invalid) {
@@ -33,8 +34,8 @@ export class RegisterPage {
     }
 
     this.isLoading.set(true);
-    this.succesMessage.set('');
-    this.errormessage.set('');
+    this.successMessage.set('');
+    this.errorMessage.set('');
 
     const payload = {
       ...this.form.getRawValue(),
@@ -44,24 +45,25 @@ export class RegisterPage {
     this.authService.register(payload).subscribe({
       next: (response) => {
         this.isLoading.set(false);
-        this.succesMessage.set(response.message);
+        this.successMessage.set(response.message);
         setTimeout(() => void this.router.navigate(['/login']), 900);
       },
-      error: (error:unknown) => {
+
+      error: (error: unknown) => {
         this.isLoading.set(false);
-        this.errormessage.set(this.extractErrorMessage(error));
+        this.errorMessage.set(this.exctractErrorMessage(error));
       }
     });
   }
-
-  private extractErrorMessage(error: unknown): string {
-    if (error instanceof HttpErrorResponse) {
-      if (Array.isArray(error.error) && error.error.length > 0) {
-        return error.error.map((item: { description?: string }) => item.description ?? 'Errore').join(' | ');
+  private exctractErrorMessage(error: unknown): string {
+    if(error instanceof HttpErrorResponse)
+    {
+      if(Array.isArray(error.error) && error.error.length > 0){
+        return error.error.map((item: {description?: string}) => item.description ?? 'Errore').join('|');
       }
-      return error.error?.message ?? 'Registrazione non riuscita.';
-    }
 
-    return 'Registrazione non riuscita.';
+      return error.error?.message ??  'Registrazione non riuscita';
+    }
+    return 'Registrazione non riuscita'
   }
 }
